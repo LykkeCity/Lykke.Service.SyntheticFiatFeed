@@ -10,5 +10,7 @@ namespace Lykke.Service.SyntheticFiatFeed.Settings
         public DbSettings Db { get; set; }
 
         public TickPriceSettings TickPrices { get; set; }
+
+        public OrderbooksSettings OrderBooks { get; set; }
     }
 }

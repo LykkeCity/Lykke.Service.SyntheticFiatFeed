@@ -12,6 +12,7 @@ using Lykke.Common.Log;
 using Lykke.RabbitMqBroker.Publisher;
 using Lykke.RabbitMqBroker.Subscriber;
 using Microsoft.Extensions.Hosting;
+using Newtonsoft.Json;
 
 namespace Lykke.Service.SyntheticFiatFeed.Services
 {
@@ -54,7 +55,7 @@ namespace Lykke.Service.SyntheticFiatFeed.Services
                     await _publisher.ProduceAsync(x);
                     return x;
                 })
-                .Do(_ => { },
+                .Do(x => _log.Debug(JsonConvert.SerializeObject(x)),
                     err => _log.Error(err))
                 .Select(_ => Unit.Default);
         }

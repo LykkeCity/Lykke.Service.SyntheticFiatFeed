@@ -2,7 +2,6 @@
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
-using Common.Log;
 using Lykke.Common.Log;
 using Lykke.RabbitMqBroker;
 using Lykke.RabbitMqBroker.Subscriber;
