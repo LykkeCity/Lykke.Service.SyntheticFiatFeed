@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using JetBrains.Annotations;
 using Lykke.Common.ExchangeAdapter.Contracts;
 using Lykke.Service.SyntheticFiatFeed.Core.Services;
 
@@ -51,47 +52,47 @@ namespace Lykke.Service.SyntheticFiatFeed.Services.SynCoins
             if ((changedPair == "BTCUSD" || changedPair == "EURUSD") && (_lastBtcUSd != null) && _lastTickPrices.ContainsKey("EURUSD"))
             {
                 var tp = _lastTickPrices["EURUSD"];
-                var ob = Convert(_lastBtcUSd, 1 / tp.Bid, 1 / tp.Ask, "BTCEUR");
+                var ob = Convert(_lastBtcUSd, 1 / tp.Bid, 1 / tp.Ask, "BTCEUR", 5);
                 await _orderBookProvider.Publish(ob);
             }
 
             if ((changedPair == "BTCUSD" || changedPair == "GBPUSD") && (_lastBtcUSd != null) && _lastTickPrices.ContainsKey("GBPUSD"))
             {
                 var tp = _lastTickPrices["GBPUSD"];
-                var ob = Convert(_lastBtcUSd, 1 / tp.Bid, 1 / tp.Ask, "BTCGBP");
+                var ob = Convert(_lastBtcUSd, 1 / tp.Bid, 1 / tp.Ask, "BTCGBP", 5);
                 await _orderBookProvider.Publish(ob);
             }
 
             if ((changedPair == "BTCUSD" || changedPair == "USDCHF") && (_lastBtcUSd != null) && _lastTickPrices.ContainsKey("USDCHF"))
             {
                 var tp = _lastTickPrices["USDCHF"];
-                var ob = Convert(_lastBtcUSd, tp.Ask, tp.Bid, "BTCCHF");
+                var ob = Convert(_lastBtcUSd, tp.Ask, tp.Bid, "BTCCHF", 5);
                 await _orderBookProvider.Publish(ob);
             }
 
             if ((changedPair == "BTCUSD" || changedPair == "USDJPY") && (_lastBtcUSd != null) && _lastTickPrices.ContainsKey("USDJPY"))
             {
                 var tp = _lastTickPrices["USDJPY"];
-                var ob = Convert(_lastBtcUSd, tp.Ask, tp.Bid, "BTCJPY");
+                var ob = Convert(_lastBtcUSd, tp.Ask, tp.Bid, "BTCJPY", 3);
                 await _orderBookProvider.Publish(ob);
             }
 
             if (changedPair == "BTCUSD")
             {
-                var ob = Convert(_lastBtcUSd, 1, 1, "BTCUSD");
+                var ob = Convert(_lastBtcUSd, 1, 1, "BTCUSD", 8);
                 await _orderBookProvider.Publish(ob);
             }
         }
 
-        private OrderBook Convert(OrderBook source, decimal askKoef, decimal bidKoef, string pair)
+        private OrderBook Convert(OrderBook source, decimal askKoef, decimal bidKoef, [CanBeNull] string pair, int accuracy)
         {
             var result = new OrderBook()
             {
                 Source = $"Synthetic-{_baseSourceExchange}-btcusd",
                 Timestamp = DateTime.UtcNow,
                 Asset = pair,
-                Asks = source.Asks.Select(e => new OrderBookItem(e.Price * askKoef, e.Volume)),
-                Bids = source.Bids.Select(e => new OrderBookItem(e.Price * bidKoef, e.Volume))
+                Asks = source.Asks.Select(e => new OrderBookItem(Math.Round(e.Price * askKoef, accuracy), e.Volume)),
+                Bids = source.Bids.Select(e => new OrderBookItem(Math.Round(e.Price * bidKoef, accuracy), e.Volume))
             };
 
             return result;
