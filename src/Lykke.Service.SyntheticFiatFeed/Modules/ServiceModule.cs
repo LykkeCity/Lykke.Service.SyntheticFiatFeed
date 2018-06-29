@@ -1,4 +1,5 @@
 ﻿using Autofac;
+using Lykke.Common.ExchangeAdapter.Contracts;
 using Lykke.Service.SyntheticFiatFeed.Services;
 using Lykke.Service.SyntheticFiatFeed.Settings;
 using Lykke.SettingsReader;
@@ -24,6 +25,14 @@ namespace Lykke.Service.SyntheticFiatFeed.Modules
                     new TypedParameter(
                         typeof(TickPriceSettings),
                         _appSettings.CurrentValue.SyntheticFiatFeedService.TickPrices))
+                .SingleInstance();
+
+            builder.RegisterType<OrderbookGeneratorService>()
+                .As<IHostedService>()
+                .WithParameter(
+                    new TypedParameter(
+                        typeof(OrderbooksSettings),
+                        _appSettings.CurrentValue.SyntheticFiatFeedService.OrderBooks))
                 .SingleInstance();
         }
     }
