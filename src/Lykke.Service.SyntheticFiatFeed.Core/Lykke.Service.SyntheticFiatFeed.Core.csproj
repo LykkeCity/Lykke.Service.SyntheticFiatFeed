@@ -7,9 +7,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Folder Include="Domain\" />
-    <Folder Include="Services\" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Lykke.Common" Version="7.0.1" />
+    <PackageReference Include="Lykke.Common.ExchangeAdapter" Version="2.3.1" />
   </ItemGroup>
 </Project>
