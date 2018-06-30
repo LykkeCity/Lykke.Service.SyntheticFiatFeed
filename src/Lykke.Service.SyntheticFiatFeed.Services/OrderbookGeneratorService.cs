@@ -82,7 +82,9 @@ namespace Lykke.Service.SyntheticFiatFeed.Services
                     sourceOrdeBook,
                     new OrderbookGenerationSettings(
                         _settings.CryptoCurrency,
-                        expected.Source, expected.Target));
+                        expected.Source,
+                        expected.Target,
+                        expected.Decimals));
             }
         }
 
@@ -107,14 +109,15 @@ namespace Lykke.Service.SyntheticFiatFeed.Services
                     b,
                     $"{orderbookGeneration.Crypto}{orderbookGeneration.ExpectedFiat}",
                     $"synthetic-{_settings.SourceName}-{orderbookGeneration.Crypto.ToLowerInvariant()}" +
-                    $"{orderbookGeneration.BaseFiat.ToLowerInvariant()}"));
+                    $"{orderbookGeneration.BaseFiat.ToLowerInvariant()}",
+                    orderbookGeneration.Decimals));
         }
 
         private IObservable<TickPrice> GetCrossTicks(
             IObservable<TickPrice> lykkeTickPrices,
             OrderbookGenerationSettings settings)
         {
-            var direct = $"{settings.BaseFiat}{settings.ExpectedFiat}";
+            var direct =  $"{settings.BaseFiat}{settings.ExpectedFiat}";
             var reverse = $"{settings.ExpectedFiat}{settings.BaseFiat}";
 
             return
@@ -132,19 +135,20 @@ namespace Lykke.Service.SyntheticFiatFeed.Services
         {
             return new TickPrice
             {
-                Ask = tickPrice.Ask == 0 ? 0 : 1 / tickPrice.Ask,
-                Bid = tickPrice.Bid == 0 ? 0 : 1 / tickPrice.Bid,
+                Ask = tickPrice.Bid == 0 ? 0 : 1 / tickPrice.Bid,
+                Bid = tickPrice.Ask == 0 ? 0 : 1 / tickPrice.Ask,
                 Asset = reverseAsset,
                 Timestamp = tickPrice.Timestamp,
                 Source = tickPrice.Source
             };
         }
 
-        private OrderBook CreateSyntheticOrderBook(
+        public static OrderBook CreateSyntheticOrderBook(
             TickPrice tickPrice,
             OrderBook orderBook,
             string resultPair,
-            string source)
+            string source,
+            int decimals)
         {
             return new OrderBook(
                 source,
@@ -152,12 +156,12 @@ namespace Lykke.Service.SyntheticFiatFeed.Services
                 tickPrice.Timestamp > orderBook.Timestamp ? tickPrice.Timestamp : orderBook.Timestamp,
                 orderBook.Asks.Select(x => new OrderBookItem
                 {
-                    Price = x.Price * tickPrice.Ask,
+                    Price = Math.Round(x.Price * tickPrice.Ask, decimals),
                     Volume = x.Volume
                 }),
                 orderBook.Bids.Select(x => new OrderBookItem
                 {
-                    Price = x.Price * tickPrice.Bid,
+                    Price = Math.Round(x.Price * tickPrice.Bid, decimals),
                     Volume = x.Volume
                 }));
         }
