@@ -1,6 +1,11 @@
 ﻿using Autofac;
 using Lykke.Common.ExchangeAdapter.Contracts;
+using Lykke.Sdk;
+using Lykke.Service.SyntheticFiatFeed.Core.Services;
+using Lykke.Service.SyntheticFiatFeed.Managers;
+using Lykke.Service.SyntheticFiatFeed.RabbitMq;
 using Lykke.Service.SyntheticFiatFeed.Services;
+using Lykke.Service.SyntheticFiatFeed.Services.Sim;
 using Lykke.Service.SyntheticFiatFeed.Settings;
 using Lykke.SettingsReader;
 using Microsoft.Extensions.Hosting;
@@ -18,6 +23,29 @@ namespace Lykke.Service.SyntheticFiatFeed.Modules
 
         protected override void Load(ContainerBuilder builder)
         {
+            builder.RegisterType<StartupManager>()
+                .As<IStartupManager>();
+
+            builder.RegisterType<ShutdownManager>()
+                .As<IShutdownManager>();
+
+            foreach (var rabbitMqExchangeSource in _appSettings.CurrentValue.SyntheticFiatFeedService.ExchangeSourceList)
+            {
+                builder.RegisterType<OrderBookSubscriber>()
+                    .WithParameter(
+                        new TypedParameter(
+                            typeof(RabbitMqExchangeSource),
+                            rabbitMqExchangeSource))
+                    .AsSelf();
+            }
+
+            builder.RegisterType<OrderBookStore>()
+                .As<IOrderBookStore>()
+                .As<IOrderBookHandler>()
+                .SingleInstance();
+
+
+            return;
             // Do not register entire settings in container, pass necessary settings to services which requires them
             builder.RegisterType<SyntheticTicksPublishingService>()
                 .As<IHostedService>()

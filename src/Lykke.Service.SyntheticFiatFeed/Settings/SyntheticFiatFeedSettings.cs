@@ -1,4 +1,5 @@
-﻿using JetBrains.Annotations;
+﻿using System.Collections.Generic;
+using JetBrains.Annotations;
 using Lykke.Service.SyntheticFiatFeed.Services;
 
 namespace Lykke.Service.SyntheticFiatFeed.Settings
@@ -12,5 +13,7 @@ namespace Lykke.Service.SyntheticFiatFeed.Settings
         public TickPriceSettings TickPrices { get; set; }
 
         public OrderbooksSettings OrderBooks { get; set; }
+
+        public List<RabbitMqExchangeSource> ExchangeSourceList { get; set; }
     }
 }
