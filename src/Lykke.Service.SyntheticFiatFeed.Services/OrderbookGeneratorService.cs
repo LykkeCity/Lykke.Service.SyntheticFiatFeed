@@ -171,7 +171,7 @@ namespace Lykke.Service.SyntheticFiatFeed.Services
             var settings = new RabbitMqSubscriptionSettings
             {
                 ConnectionString = _settings.RabbitMq,
-                ExchangeName = "lykke.exchangeconnector.orderBooks.bitstamp",
+                ExchangeName = _settings.OrderBooksExchanger,
                 QueueName = $"lykke.exchangeconnector.orderBooks.bitstamp.synthetic-fiat-{Guid.NewGuid()}",
                 IsDurable = false
             };

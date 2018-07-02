@@ -19,5 +19,6 @@ namespace Lykke.Service.SyntheticFiatFeed.Services
         public string SourceName { get; set; }
 
         public CrossFiat[] CrossFiatRates { get; set; }
+        public string OrderBooksExchanger { get; set; }
     }
 }
