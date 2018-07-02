@@ -184,12 +184,21 @@ namespace Lykke.Service.SyntheticFiatFeed.Services
             var settings = new RabbitMqSubscriptionSettings
             {
                 ConnectionString = _settings.RabbitMq,
-                ExchangeName = "lykke.exchangeconnector.tickPrices.lykke",
-                QueueName = $"lykke.exchangeconnector.tickPrices.lykke.synthetic-fiat-{Guid.NewGuid()}",
+                ExchangeName = _settings.FiatTickPricesExchanger,
+                QueueName = $"{_settings.FiatTickPricesExchanger}.lykke.synthetic-fiat-{Guid.NewGuid()}",
                 IsDurable = false
             };
 
-            return  RmqHelper.ReadAsJson<TickPrice>(settings, _logFactory);
+            var allTicks = RmqHelper.ReadAsJson<TickPrice>(settings, _logFactory);
+
+            if (string.IsNullOrWhiteSpace(_settings.FiatTicksSourceFilter))
+            {
+                return allTicks;
+            }
+
+            return allTicks.Where(x => x.Source.Equals(
+                _settings.FiatTicksSourceFilter,
+                StringComparison.InvariantCultureIgnoreCase));
         }
 
         public Task StopAsync(CancellationToken cancellationToken)

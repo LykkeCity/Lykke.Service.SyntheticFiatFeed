@@ -9,9 +9,10 @@ namespace Lykke.Service.SyntheticFiatFeed.Services
 
         public string OutputExchanger { get; set; }
 
-        public string OrderBooksExchanger { get; set; }
-
         public string FiatTickPricesExchanger { get; set; }
+
+        [Optional]
+        public string FiatTicksSourceFilter { get; set; }
 
         public string CryptoCurrency { get; set; }
 
