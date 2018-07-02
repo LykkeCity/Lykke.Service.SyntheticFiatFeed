@@ -75,7 +75,12 @@ namespace Lykke.Service.SyntheticFiatFeed.Services
             IObservable<TickPrice> sourceTickPrices,
             IObservable<OrderBook> sourceOrdeBook)
         {
-            yield return sourceOrdeBook.Select(CloneWithChangedSource);
+            foreach (var baseFiat in _settings.CrossFiatRates.Select(x => x.Source).Distinct())
+            {
+                yield return sourceOrdeBook
+                    .Where(x => x.Asset == $"{_settings.CryptoCurrency}{baseFiat}")
+                    .Select(CloneWithChangedSource);
+            }
 
             foreach (var expected in _settings.CrossFiatRates)
             {
