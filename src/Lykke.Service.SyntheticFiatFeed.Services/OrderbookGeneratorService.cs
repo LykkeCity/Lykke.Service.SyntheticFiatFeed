@@ -75,6 +75,8 @@ namespace Lykke.Service.SyntheticFiatFeed.Services
             IObservable<TickPrice> sourceTickPrices,
             IObservable<OrderBook> sourceOrdeBook)
         {
+            yield return sourceOrdeBook.Select(CloneWithChangedSource);
+
             foreach (var expected in _settings.CrossFiatRates)
             {
                 yield return GetSyntheticOrderBooks(
@@ -86,6 +88,13 @@ namespace Lykke.Service.SyntheticFiatFeed.Services
                         expected.Target,
                         expected.Decimals));
             }
+        }
+
+        private OrderBook CloneWithChangedSource(OrderBook ob)
+        {
+            var newOb = ob.Clone(ob.Timestamp);
+            newOb.Source = GetSyntheticSourceName(ob.Asset);
+            return newOb;
         }
 
         private IObservable<OrderBook> GetSyntheticOrderBooks(
@@ -108,9 +117,13 @@ namespace Lykke.Service.SyntheticFiatFeed.Services
                     t,
                     b,
                     $"{orderbookGeneration.Crypto}{orderbookGeneration.ExpectedFiat}",
-                    $"synthetic-{_settings.SourceName}-{orderbookGeneration.Crypto.ToLowerInvariant()}" +
-                    $"{orderbookGeneration.BaseFiat.ToLowerInvariant()}",
+                    GetSyntheticSourceName($"{orderbookGeneration.Crypto}{orderbookGeneration.BaseFiat}"),
                     orderbookGeneration.Decimals));
+        }
+
+        private string GetSyntheticSourceName(string resultAsset)
+        {
+            return $"synthetic-{_settings.SourceName}-{resultAsset.ToLowerInvariant()}";
         }
 
         private IObservable<TickPrice> GetCrossTicks(
