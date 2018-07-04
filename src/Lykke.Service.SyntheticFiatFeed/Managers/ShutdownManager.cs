@@ -7,7 +7,7 @@ using Lykke.Service.SyntheticFiatFeed.Services.Sim;
 namespace Lykke.Service.SyntheticFiatFeed.Managers
 {
     [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
-    public class StartupManager : IStartupManager
+    public class ShutdownManager : IShutdownManager
     {
         private readonly OrderBookSubscriber[] _orderBookSubscribers;
         private readonly TickPriceSubscriber[] _tickPriceSubscribers;
@@ -15,7 +15,7 @@ namespace Lykke.Service.SyntheticFiatFeed.Managers
         private readonly TickPricePublisher _tickPricePublisher;
         private readonly OrderBookPublisher _orderBookPublisher;
 
-        public StartupManager(
+        public ShutdownManager(
             OrderBookSubscriber[] orderBookOrderBookSubscribers, 
             TickPriceSubscriber[] tickPriceSubscribers,
             SimService simService,
@@ -29,23 +29,23 @@ namespace Lykke.Service.SyntheticFiatFeed.Managers
             _orderBookPublisher = orderBookPublisher;
         }
 
-        public Task StartAsync()
+        public Task StopAsync()
         {
-            foreach (var orderBookSubscriber in _orderBookSubscribers)
+            _simService.Stop();
+
+            foreach (var subscriber in _orderBookSubscribers)
             {
-                orderBookSubscriber.Start();
+                subscriber.Stop();
             }
 
             foreach (var subscriber in _tickPriceSubscribers)
             {
-                subscriber.Start();
+                subscriber.Stop();
             }
 
-            _tickPricePublisher.Start();
+            _tickPricePublisher.Stop();
 
-            _orderBookPublisher.Start();
-
-            _simService.Start();
+            _orderBookPublisher.Stop();
 
             return Task.CompletedTask;
         }

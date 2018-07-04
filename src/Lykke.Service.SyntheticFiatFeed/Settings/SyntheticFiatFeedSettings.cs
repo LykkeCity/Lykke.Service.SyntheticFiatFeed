@@ -15,5 +15,7 @@ namespace Lykke.Service.SyntheticFiatFeed.Settings
         public OrderbooksSettings OrderBooks { get; set; }
 
         public List<RabbitMqExchangeSource> ExchangeSourceList { get; set; }
+
+        public RabbitMqPublisherSettings ExchangePublisherSettings { get; set; }
     }
 }

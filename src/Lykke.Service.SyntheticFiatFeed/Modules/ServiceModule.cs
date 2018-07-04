@@ -1,6 +1,9 @@
 ﻿using Autofac;
+using AzureStorage.Tables;
 using Lykke.Common.ExchangeAdapter.Contracts;
+using Lykke.Common.Log;
 using Lykke.Sdk;
+using Lykke.Service.SyntheticFiatFeed.AzureRepositories;
 using Lykke.Service.SyntheticFiatFeed.Core.Services;
 using Lykke.Service.SyntheticFiatFeed.Managers;
 using Lykke.Service.SyntheticFiatFeed.RabbitMq;
@@ -31,7 +34,7 @@ namespace Lykke.Service.SyntheticFiatFeed.Modules
 
             foreach (var rabbitMqExchangeSource in _appSettings.CurrentValue.SyntheticFiatFeedService.ExchangeSourceList)
             {
-                builder.RegisterType<OrderBookSubscriber>()
+                builder.RegisterType<TickPriceSubscriber>()
                     .WithParameter(
                         new TypedParameter(
                             typeof(RabbitMqExchangeSource),
@@ -39,11 +42,51 @@ namespace Lykke.Service.SyntheticFiatFeed.Modules
                     .AsSelf();
             }
 
-            builder.RegisterType<OrderBookStore>()
-                .As<IOrderBookStore>()
-                .As<IOrderBookHandler>()
+            builder.RegisterType<TickPriceStore>()
+                .As<ITickPriceStore>()
+                .As<ITickPriceHandler>()
                 .SingleInstance();
 
+
+            builder.Register(c =>
+                    new SimBaseInstrumentSettingRepository(AzureTableStorage<SimBaseInstrumentSettingEntity>.Create(
+                        _appSettings.Nested(e => e.SyntheticFiatFeedService.Db.DataConnString),
+                        "SimSettings",
+                        c.Resolve<ILogFactory>())))
+                .As<ISimBaseInstrumentSettingRepository>()
+                .SingleInstance();
+
+            builder.Register(c =>
+                    new ExchangeCommissionSettingRepository(AzureTableStorage<ExchangeCommissionSettingEntity>.Create(
+                        _appSettings.Nested(e => e.SyntheticFiatFeedService.Db.DataConnString),
+                        "ExchangeCommissionSettings",
+                        c.Resolve<ILogFactory>())))
+                .As<IExchangeCommissionSettingRepository>()
+                .SingleInstance();
+
+            builder.RegisterType<SimService>()
+                .AsSelf()
+                .SingleInstance();
+
+            builder.RegisterType<TickPricePublisher>()
+                .WithParameter(
+                    new TypedParameter(
+                        typeof(RabbitMqPublisherSettings),
+                        _appSettings.CurrentValue.SyntheticFiatFeedService.ExchangePublisherSettings))
+                .As<ITickPriceProvider>()
+                .AsSelf()
+                .SingleInstance();
+
+            builder.RegisterType<OrderBookPublisher>()
+                .WithParameter(
+                    new TypedParameter(
+                        typeof(RabbitMqPublisherSettings),
+                        _appSettings.CurrentValue.SyntheticFiatFeedService.ExchangePublisherSettings))
+                .As<IOrderBookProvider>()
+                .AsSelf()
+                .SingleInstance();
+
+            
 
             return;
             // Do not register entire settings in container, pass necessary settings to services which requires them
