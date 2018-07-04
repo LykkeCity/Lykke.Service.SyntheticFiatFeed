@@ -281,7 +281,7 @@ namespace Lykke.Service.SyntheticFiatFeed.Tests.Sim
             Assert.AreEqual(1, tickPriceData.Data.Count);
 
             var tp = tickPriceData.Data.First();
-            Assert.AreEqual(6050.01m, tp.Ask);
+            Assert.AreEqual(6055.01m, tp.Ask);
             Assert.AreEqual(6054.99m, tp.Bid);
         }
 
