@@ -87,8 +87,6 @@ namespace Lykke.Service.SyntheticFiatFeed.Modules
                 .SingleInstance();
 
             
-
-            return;
             // Do not register entire settings in container, pass necessary settings to services which requires them
             builder.RegisterType<SyntheticTicksPublishingService>()
                 .As<IHostedService>()
