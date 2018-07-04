@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Common;
 using Common.Log;
+using Common.PasswordTools;
 using Lykke.Common.ExchangeAdapter.Contracts;
 using Lykke.Common.Log;
 using Lykke.Service.SyntheticFiatFeed.Core.Domain;
@@ -14,11 +15,13 @@ namespace Lykke.Service.SyntheticFiatFeed.Services.Sim
     public class SimBaseInstrumentService
     {
         public const string ExchangeName = "internal";
+        public const string LykkeExchangeName = "lykke";
 
         private readonly IOrderBookProvider _orderBookProvider;
         private readonly ITickPriceProvider _tickPriceProvider;
         private readonly ITickPriceStore _tickPriceStore;
         private readonly ISimBaseInstrumentSetting _setting;
+        private readonly IExchangeCommissionSettingRepository _commissionSettingRepository;
         private readonly ILog _log;
 
         private readonly Dictionary<string, TickPrice> _lastPrices = new Dictionary<string, TickPrice>();
@@ -28,17 +31,35 @@ namespace Lykke.Service.SyntheticFiatFeed.Services.Sim
             ITickPriceProvider tickPriceProvider,
             ITickPriceStore tickPriceStore,
             ISimBaseInstrumentSetting setting,
+            IExchangeCommissionSettingRepository commissionSettingRepository,
             ILogFactory logFactory)
         {
             _orderBookProvider = orderBookProvider;
             _tickPriceProvider = tickPriceProvider;
             _tickPriceStore = tickPriceStore;
             _setting = setting;
+            _commissionSettingRepository = commissionSettingRepository;
             _log = logFactory.CreateLog(this);
         }
 
         public int Order => _setting.Order;
         public string Name => _setting.BaseAssetPair;
+
+        public static decimal GetAskWithApplyComm(IExchangeCommissionSettingRepository commissionSettingRepository, TickPrice tickPrice)
+        {
+            var lykke = commissionSettingRepository.GetSettingsByExchange(LykkeExchangeName).GetAwaiter().GetResult();
+            var exchange = commissionSettingRepository.GetSettingsByExchange(tickPrice.Source).GetAwaiter().GetResult();
+
+            return tickPrice.Ask * (1 + exchange.TradeCommissionPerc/100) * (1 + exchange.WithdrawCommissionPerc / 100) * (1 + lykke.WithdrawCommissionPerc/100);
+        }
+
+        public static decimal GetBidWithApplyComm(IExchangeCommissionSettingRepository commissionSettingRepository, TickPrice tickPrice)
+        {
+            var lykke = commissionSettingRepository.GetSettingsByExchange(LykkeExchangeName).GetAwaiter().GetResult();
+            var exchange = commissionSettingRepository.GetSettingsByExchange(tickPrice.Source).GetAwaiter().GetResult();
+
+            return tickPrice.Bid * (1 - exchange.TradeCommissionPerc / 100) * (1 - exchange.WithdrawCommissionPerc / 100) * (1 - lykke.WithdrawCommissionPerc / 100);
+        }
 
         public async Task CalculateMarket()
         {
@@ -52,8 +73,8 @@ namespace Lykke.Service.SyntheticFiatFeed.Services.Sim
 
             var minTick = 1m / (decimal) Math.Pow(10, _setting.PriceAccuracy);
 
-            var ask = baseTickPrice.Select(e => e.Bid).Max() + minTick;
-            var bid = baseTickPrice.Select(e => e.Ask).Min() - minTick;
+            var ask = baseTickPrice.Select(e => GetBidWithApplyComm(_commissionSettingRepository, e)).Max() + minTick;
+            var bid = baseTickPrice.Select(e => GetAskWithApplyComm(_commissionSettingRepository, e)).Min() - minTick;
 
             if (ask <= bid)
             {

@@ -27,7 +27,7 @@ namespace Lykke.Service.SyntheticFiatFeed.Tests.Sim
             var orderBookData = new FakeOrderBookProvider();
             var tickPriceData = new FakeTickPriceProvider();
 
-            var service = new SimBaseInstrumentService(orderBookData, tickPriceData, store.Object, setting, EmptyLogFactory.Instance);
+            var service = new SimBaseInstrumentService(orderBookData, tickPriceData, store.Object, setting, GetEmptyCommission(), EmptyLogFactory.Instance);
 
             service.CalculateMarket().GetAwaiter().GetResult();
 
@@ -63,7 +63,7 @@ namespace Lykke.Service.SyntheticFiatFeed.Tests.Sim
             var orderBookData = new FakeOrderBookProvider();
             var tickPriceData = new FakeTickPriceProvider();
 
-            var service = new SimBaseInstrumentService(orderBookData, tickPriceData, store.Object, setting, EmptyLogFactory.Instance);
+            var service = new SimBaseInstrumentService(orderBookData, tickPriceData, store.Object, setting, GetEmptyCommission(), EmptyLogFactory.Instance);
 
             service.CalculateMarket().GetAwaiter().GetResult();
             service.CalculateMarket().GetAwaiter().GetResult();
@@ -100,7 +100,7 @@ namespace Lykke.Service.SyntheticFiatFeed.Tests.Sim
             var orderBookData = new FakeOrderBookProvider();
             var tickPriceData = new FakeTickPriceProvider();
 
-            var service = new SimBaseInstrumentService(orderBookData, tickPriceData, store.Object, setting, EmptyLogFactory.Instance);
+            var service = new SimBaseInstrumentService(orderBookData, tickPriceData, store.Object, setting, GetEmptyCommission(), EmptyLogFactory.Instance);
 
             service.CalculateMarket().GetAwaiter().GetResult();
             service.CalculateMarket().GetAwaiter().GetResult();
@@ -137,7 +137,7 @@ namespace Lykke.Service.SyntheticFiatFeed.Tests.Sim
             var orderBookData = new FakeOrderBookProvider();
             var tickPriceData = new FakeTickPriceProvider();
 
-            var service = new SimBaseInstrumentService(orderBookData, tickPriceData, store.Object, setting, EmptyLogFactory.Instance);
+            var service = new SimBaseInstrumentService(orderBookData, tickPriceData, store.Object, setting, GetEmptyCommission(), EmptyLogFactory.Instance);
 
             service.CalculateMarket().GetAwaiter().GetResult();
             service.CalculateMarket().GetAwaiter().GetResult();
@@ -160,7 +160,7 @@ namespace Lykke.Service.SyntheticFiatFeed.Tests.Sim
             var orderBookData = new FakeOrderBookProvider();
             var tickPriceData = new FakeTickPriceProvider();
 
-            var service = new SimBaseInstrumentService(orderBookData, tickPriceData, store.Object, setting, EmptyLogFactory.Instance);
+            var service = new SimBaseInstrumentService(orderBookData, tickPriceData, store.Object, setting, GetEmptyCommission(), EmptyLogFactory.Instance);
 
             service.CalculateMarket().GetAwaiter().GetResult();
 
@@ -192,7 +192,7 @@ namespace Lykke.Service.SyntheticFiatFeed.Tests.Sim
             var orderBookData = new FakeOrderBookProvider();
             var tickPriceData = new FakeTickPriceProvider();
 
-            var service = new SimBaseInstrumentService(orderBookData, tickPriceData, store.Object, setting, EmptyLogFactory.Instance);
+            var service = new SimBaseInstrumentService(orderBookData, tickPriceData, store.Object, setting, GetEmptyCommission(), EmptyLogFactory.Instance);
 
             service.CalculateMarket().GetAwaiter().GetResult();
 
@@ -251,8 +251,84 @@ namespace Lykke.Service.SyntheticFiatFeed.Tests.Sim
             Assert.AreEqual(chfBid, btcchfTp.Bid);
         }
 
+        [Test]
+        public void ApplyCommissionInPrices_1()
+        {
+            var setting = new SimBaseInstrumentSetting();
+            setting.SourceExchange.Add("bitstamp");
+
+            var store = new Mock<ITickPriceStore>();
+
+            store.Setup(e => e.GetTickPrice("bitstamp", "BTCUSD")).Returns(CreateCtickPrice(6000, 6100, "bitstamp", "BTCUSD"));
+
+            var orderBookData = new FakeOrderBookProvider();
+            var tickPriceData = new FakeTickPriceProvider();
+
+            var commisiionRepo = new Mock<IExchangeCommissionSettingRepository>();
+            commisiionRepo.Setup(e => e.GetSettingsByExchange(It.IsAny<string>())).Returns(Task.FromResult<IExchangeCommissionSetting>(new FakeExchangeCommissionSetting()));
+            commisiionRepo.Setup(e => e.GetSettingsByExchange("bitstamp")).Returns(Task.FromResult<IExchangeCommissionSetting>(new FakeExchangeCommissionSetting()
+            {
+                ExchangeName = "bitstamp",
+                TradeCommissionPerc = 10,
+                WithdrawCommissionPerc = 0
+            }));
+
+            var service = new SimBaseInstrumentService(orderBookData, tickPriceData, store.Object, setting, commisiionRepo.Object, EmptyLogFactory.Instance);
+
+            service.CalculateMarket().GetAwaiter().GetResult();
+
+            Assert.AreEqual(1, orderBookData.Data.Count);
+            Assert.AreEqual(1, tickPriceData.Data.Count);
+
+            var tp = tickPriceData.Data.First();
+            Assert.AreEqual(6050.01m, tp.Ask);
+            Assert.AreEqual(6054.99m, tp.Bid);
+        }
+
+        [Test]
+        public void ApplyCommissionInPrices_2()
+        {
+            var setting = new SimBaseInstrumentSetting();
+            setting.SourceExchange.Add("bitstamp");
+            setting.SourceExchange.Add("aaa");
+
+            var store = new Mock<ITickPriceStore>();
+
+            store.Setup(e => e.GetTickPrice("bitstamp", "BTCUSD")).Returns(CreateCtickPrice(6100, 6200, "bitstamp", "BTCUSD"));
+            store.Setup(e => e.GetTickPrice("aaa", "BTCUSD")).Returns(CreateCtickPrice(5000, 5050, "aaa", "BTCUSD"));
+
+            var orderBookData = new FakeOrderBookProvider();
+            var tickPriceData = new FakeTickPriceProvider();
+
+            var commisiionRepo = new Mock<IExchangeCommissionSettingRepository>();
+            commisiionRepo.Setup(e => e.GetSettingsByExchange(It.IsAny<string>())).Returns(Task.FromResult<IExchangeCommissionSetting>(new FakeExchangeCommissionSetting()));
+            commisiionRepo.Setup(e => e.GetSettingsByExchange("bitstamp")).Returns(Task.FromResult<IExchangeCommissionSetting>(new FakeExchangeCommissionSetting()
+            {
+                ExchangeName = "bitstamp",
+                TradeCommissionPerc = 10,
+                WithdrawCommissionPerc = 0
+            }));
+
+            var service = new SimBaseInstrumentService(orderBookData, tickPriceData, store.Object, setting, commisiionRepo.Object, EmptyLogFactory.Instance);
+
+            service.CalculateMarket().GetAwaiter().GetResult();
+
+            Assert.AreEqual(1, orderBookData.Data.Count);
+            Assert.AreEqual(1, tickPriceData.Data.Count);
+
+            var tp = tickPriceData.Data.First();
+            Assert.AreEqual(6100.01m-610m, tp.Ask);
+            Assert.AreEqual(5049.99m, tp.Bid);
+        }
 
 
+
+        private IExchangeCommissionSettingRepository GetEmptyCommission()
+        {
+            var moq = new Mock<IExchangeCommissionSettingRepository>();
+            moq.Setup(e => e.GetSettingsByExchange(It.IsAny<string>())).Returns(Task.FromResult<IExchangeCommissionSetting>(new FakeExchangeCommissionSetting()));
+            return moq.Object;
+        }
 
 
         private TickPrice CreateCtickPrice(decimal bid, decimal ask, string source, string assetPair)
@@ -366,5 +442,12 @@ namespace Lykke.Service.SyntheticFiatFeed.Tests.Sim
         public bool IsReverse { get; set; }
         public int PriceAccuracy { get; set; }
         public bool IsInternal { get; set; }
+    }
+
+    public class FakeExchangeCommissionSetting : IExchangeCommissionSetting
+    {
+        public string ExchangeName { get; set; }
+        public decimal TradeCommissionPerc { get; set; }
+        public decimal WithdrawCommissionPerc { get; set; }
     }
 }

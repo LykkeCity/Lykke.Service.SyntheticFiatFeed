@@ -18,6 +18,7 @@ namespace Lykke.Service.SyntheticFiatFeed.Services.Sim
         private readonly IOrderBookProvider _orderBookProvider;
         private readonly ITickPriceProvider _tickPriceProvider;
         private readonly ITickPriceStore _tickPriceStore;
+        private readonly IExchangeCommissionSettingRepository _commissionSettingRepository;
         private readonly List<SimBaseInstrumentService> _services = new List<SimBaseInstrumentService>();
 
         private readonly TimerTrigger _timerTrigger;
@@ -28,13 +29,15 @@ namespace Lykke.Service.SyntheticFiatFeed.Services.Sim
             ILogFactory logFactory,
             IOrderBookProvider orderBookProvider,
             ITickPriceProvider tickPriceProvider,
-            ITickPriceStore tickPriceStore)
+            ITickPriceStore tickPriceStore,
+            IExchangeCommissionSettingRepository commissionSettingRepository)
         {
             _settings = settings;
             _logFactory = logFactory;
             _orderBookProvider = orderBookProvider;
             _tickPriceProvider = tickPriceProvider;
             _tickPriceStore = tickPriceStore;
+            _commissionSettingRepository = commissionSettingRepository;
             _log = _logFactory.CreateLog(this);
 
             _timerTrigger = new TimerTrigger(nameof(SimService), TimeSpan.FromMilliseconds(500), _logFactory, DoTime);
@@ -61,7 +64,7 @@ namespace Lykke.Service.SyntheticFiatFeed.Services.Sim
 
             foreach (ISimBaseInstrumentSetting setting in settings)
             {
-                var item = new SimBaseInstrumentService(_orderBookProvider, _tickPriceProvider, _tickPriceStore, setting, _logFactory);
+                var item = new SimBaseInstrumentService(_orderBookProvider, _tickPriceProvider, _tickPriceStore, setting, _commissionSettingRepository, _logFactory);
                 _services.Add(item);
             }
 
