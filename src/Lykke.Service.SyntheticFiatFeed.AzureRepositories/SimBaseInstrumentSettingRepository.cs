@@ -48,8 +48,8 @@ namespace Lykke.Service.SyntheticFiatFeed.AzureRepositories
 
     public class SimBaseInstrumentSettingEntity : AzureTableEntity, ISimBaseInstrumentSetting
     {
-        private IReadOnlyList<string> _sourceExchange;
-        private IReadOnlyList<ILinkedInstrumentSettings> _crossInstrument;
+        private IReadOnlyList<string> _sourceExchange = new List<string>();
+        private IReadOnlyList<ILinkedInstrumentSettings> _crossInstrument = new ILinkedInstrumentSettings[]{};
 
         public SimBaseInstrumentSettingEntity()
         {

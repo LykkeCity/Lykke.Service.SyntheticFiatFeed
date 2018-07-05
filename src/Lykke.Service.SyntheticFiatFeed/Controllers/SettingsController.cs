@@ -42,6 +42,8 @@ namespace Lykke.Service.SyntheticFiatFeed.Controllers
     {
         public SimBaseInstrumentSettingDto()
         {
+            CrossInstrument = new List<LinkedInstrumentSettingsDto>();
+            SourceExchange = new List<string>();
         }
 
         public SimBaseInstrumentSettingDto(ISimBaseInstrumentSetting setting)
