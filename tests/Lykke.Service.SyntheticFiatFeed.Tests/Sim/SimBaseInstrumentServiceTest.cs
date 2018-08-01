@@ -68,8 +68,8 @@ namespace Lykke.Service.SyntheticFiatFeed.Tests.Sim
             service.CalculateMarket().GetAwaiter().GetResult();
             service.CalculateMarket().GetAwaiter().GetResult();
 
-            Assert.AreEqual(1, orderBookData.Data.Count);
-            Assert.AreEqual(1, tickPriceData.Data.Count);
+            Assert.AreEqual(2, orderBookData.Data.Count);
+            Assert.AreEqual(2, tickPriceData.Data.Count);
 
             var ob = orderBookData.Data.First();
             var tp = tickPriceData.Data.First();
@@ -105,8 +105,8 @@ namespace Lykke.Service.SyntheticFiatFeed.Tests.Sim
             service.CalculateMarket().GetAwaiter().GetResult();
             service.CalculateMarket().GetAwaiter().GetResult();
 
-            Assert.AreEqual(1, orderBookData.Data.Count);
-            Assert.AreEqual(1, tickPriceData.Data.Count);
+            Assert.AreEqual(2, orderBookData.Data.Count);
+            Assert.AreEqual(2, tickPriceData.Data.Count);
 
             var ob = orderBookData.Data.First();
             var tp = tickPriceData.Data.First();
@@ -171,8 +171,8 @@ namespace Lykke.Service.SyntheticFiatFeed.Tests.Sim
 
             service.CalculateMarket().GetAwaiter().GetResult();
 
-            Assert.AreEqual(1, orderBookData.Data.Count);
-            Assert.AreEqual(1, tickPriceData.Data.Count);
+            Assert.AreEqual(2, orderBookData.Data.Count);
+            Assert.AreEqual(2, tickPriceData.Data.Count);
         }
 
         [Test]
