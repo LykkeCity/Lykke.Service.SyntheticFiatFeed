@@ -113,7 +113,7 @@ namespace Lykke.Service.SyntheticFiatFeed.Services.Sim
             if (_lastPrices.TryGetValue(assetPair, out var prevTickPrice)
                 && ask == prevTickPrice.Ask
                 && bid == prevTickPrice.Bid)
-                return;
+                prevTickPrice = null;
 
             if (prevTickPrice != null)
             {
