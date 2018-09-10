@@ -26,7 +26,7 @@ namespace Lykke.Service.SyntheticFiatFeed
                 options.Logs = logs =>
                 {
                     logs.AzureTableName = "SyntheticFiatFeedLog";
-                    logs.AzureTableConnectionStringResolver = settings => settings.SyntheticFiatFeedService.Db.LogsConnString;
+                    logs.AzureTableConnectionStringResolver = settings => settings.SyntheticFiatFeedService.Db.LogsConnectionString;
 
                     // TODO: You could add extended logging configuration here:
                     /* 

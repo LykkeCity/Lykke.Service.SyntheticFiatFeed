@@ -1,13 +1,15 @@
-﻿using Lykke.SettingsReader.Attributes;
+﻿using JetBrains.Annotations;
+using Lykke.SettingsReader.Attributes;
 
 namespace Lykke.Service.SyntheticFiatFeed.Settings
 {
+    [UsedImplicitly]
     public class DbSettings
     {
         [AzureTableCheck]
-        public string LogsConnString { get; set; }
+        public string LogsConnectionString { get; set; }
 
         [AzureTableCheck]
-        public string DataConnString { get; set; }
+        public string DataConnectionString { get; set; }
     }
 }

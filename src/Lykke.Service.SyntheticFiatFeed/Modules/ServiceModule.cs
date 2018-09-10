@@ -50,7 +50,7 @@ namespace Lykke.Service.SyntheticFiatFeed.Modules
 
             builder.Register(c =>
                     new SimBaseInstrumentSettingRepository(AzureTableStorage<SimBaseInstrumentSettingEntity>.Create(
-                        _appSettings.Nested(e => e.SyntheticFiatFeedService.Db.DataConnString),
+                        _appSettings.Nested(e => e.SyntheticFiatFeedService.Db.DataConnectionString),
                         "SimSettings",
                         c.Resolve<ILogFactory>())))
                 .As<ISimBaseInstrumentSettingRepository>()
@@ -58,7 +58,7 @@ namespace Lykke.Service.SyntheticFiatFeed.Modules
 
             builder.Register(c =>
                     new ExchangeCommissionSettingRepository(AzureTableStorage<ExchangeCommissionSettingEntity>.Create(
-                        _appSettings.Nested(e => e.SyntheticFiatFeedService.Db.DataConnString),
+                        _appSettings.Nested(e => e.SyntheticFiatFeedService.Db.DataConnectionString),
                         "ExchangeCommissionSettings",
                         c.Resolve<ILogFactory>())))
                 .As<IExchangeCommissionSettingRepository>()
