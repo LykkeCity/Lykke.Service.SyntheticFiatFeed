@@ -88,21 +88,7 @@ namespace Lykke.Service.SyntheticFiatFeed.Modules
 
             
             // Do not register entire settings in container, pass necessary settings to services which requires them
-            builder.RegisterType<SyntheticTicksPublishingService>()
-                .As<IHostedService>()
-                .WithParameter(
-                    new TypedParameter(
-                        typeof(TickPriceSettings),
-                        _appSettings.CurrentValue.SyntheticFiatFeedService.TickPrices))
-                .SingleInstance();
 
-            builder.RegisterType<OrderbookGeneratorService>()
-                .As<IHostedService>()
-                .WithParameter(
-                    new TypedParameter(
-                        typeof(OrderbooksSettings),
-                        _appSettings.CurrentValue.SyntheticFiatFeedService.OrderBooks))
-                .SingleInstance();
         }
     }
 }

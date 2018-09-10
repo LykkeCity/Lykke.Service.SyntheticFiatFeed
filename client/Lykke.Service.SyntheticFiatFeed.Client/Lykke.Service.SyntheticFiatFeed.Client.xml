@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Lykke.Service.SyntheticFiatFeed.Client</name>
+    </assembly>
+    <members>
+        <member name="M:Lykke.Service.SyntheticFiatFeed.Client.AutofacExtension.RegisterSyntheticFiatFeedClient(Autofac.ContainerBuilder,Lykke.Service.SyntheticFiatFeed.Client.SyntheticFiatFeedServiceClientSettings,System.Func{Lykke.HttpClientGenerator.HttpClientGeneratorBuilder,Lykke.HttpClientGenerator.HttpClientGeneratorBuilder})">
+            <summary>
+            Registers <see cref="T:Lykke.Service.SyntheticFiatFeed.Client.ISyntheticFiatFeedClient"/> in Autofac container using <see cref="T:Lykke.Service.SyntheticFiatFeed.Client.SyntheticFiatFeedServiceClientSettings"/>.
+            </summary>
+            <param name="builder">Autofac container builder.</param>
+            <param name="settings">SyntheticFiatFeed client settings.</param>
+            <param name="builderConfigure">Optional <see cref="T:Lykke.HttpClientGenerator.HttpClientGeneratorBuilder"/> configure handler.</param>
+        </member>
+        <member name="T:Lykke.Service.SyntheticFiatFeed.Client.ISyntheticFiatFeedApi">
+            <summary>
+            SyntheticFiatFeed client API interface.
+            </summary>
+        </member>
+        <member name="T:Lykke.Service.SyntheticFiatFeed.Client.ISyntheticFiatFeedClient">
+            <summary>
+            SyntheticFiatFeed client interface.
+            </summary>
+        </member>
+        <member name="P:Lykke.Service.SyntheticFiatFeed.Client.ISyntheticFiatFeedClient.Api">
+            <summary>Application Api interface</summary>
+        </member>
+        <member name="T:Lykke.Service.SyntheticFiatFeed.Client.SyntheticFiatFeedClient">
+            <summary>
+            SyntheticFiatFeed API aggregating interface.
+            </summary>
+        </member>
+        <member name="P:Lykke.Service.SyntheticFiatFeed.Client.SyntheticFiatFeedClient.Api">
+            <summary>Inerface to SyntheticFiatFeed Api.</summary>
+        </member>
+        <member name="M:Lykke.Service.SyntheticFiatFeed.Client.SyntheticFiatFeedClient.#ctor(Lykke.HttpClientGenerator.IHttpClientGenerator)">
+            <summary>C-tor</summary>
+        </member>
+        <member name="T:Lykke.Service.SyntheticFiatFeed.Client.SyntheticFiatFeedServiceClientSettings">
+            <summary>
+            SyntheticFiatFeed client settings.
+            </summary>
+        </member>
+        <member name="P:Lykke.Service.SyntheticFiatFeed.Client.SyntheticFiatFeedServiceClientSettings.ServiceUrl">
+            <summary>Service url.</summary>
+        </member>
+    </members>
+</doc>

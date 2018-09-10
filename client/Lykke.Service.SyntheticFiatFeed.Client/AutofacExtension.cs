@@ -1,34 +1,40 @@
-﻿using System;
-using Autofac;
-using Autofac.Core;
+﻿using Autofac;
 using JetBrains.Annotations;
-using Lykke.Common.Log;
+using Lykke.HttpClientGenerator;
+using Lykke.HttpClientGenerator.Infrastructure;
+using System;
 
 namespace Lykke.Service.SyntheticFiatFeed.Client
 {
     [PublicAPI]
     public static class AutofacExtension
     {
-        public static void RegisterSyntheticFiatFeedClient(this ContainerBuilder builder, string serviceUrl)
+        /// <summary>
+        /// Registers <see cref="ISyntheticFiatFeedClient"/> in Autofac container using <see cref="SyntheticFiatFeedServiceClientSettings"/>.
+        /// </summary>
+        /// <param name="builder">Autofac container builder.</param>
+        /// <param name="settings">SyntheticFiatFeed client settings.</param>
+        /// <param name="builderConfigure">Optional <see cref="HttpClientGeneratorBuilder"/> configure handler.</param>
+        public static void RegisterSyntheticFiatFeedClient(
+            [NotNull] this ContainerBuilder builder,
+            [NotNull] SyntheticFiatFeedServiceClientSettings settings,
+            [CanBeNull] Func<HttpClientGeneratorBuilder, HttpClientGeneratorBuilder> builderConfigure)
         {
             if (builder == null)
-            {
                 throw new ArgumentNullException(nameof(builder));
-            }
-            if (string.IsNullOrWhiteSpace(serviceUrl))
-            {
-                throw new ArgumentException("Value cannot be null or whitespace.", nameof(serviceUrl));
-            }
+            if (settings == null)
+                throw new ArgumentNullException(nameof(settings));
+            if (string.IsNullOrWhiteSpace(settings.ServiceUrl))
+                throw new ArgumentException("Value cannot be null or whitespace.", nameof(SyntheticFiatFeedServiceClientSettings.ServiceUrl));
 
-            builder.RegisterType<SyntheticFiatFeedClient>()
-                .WithParameter("serviceUrl", serviceUrl)
+            var clientBuilder = HttpClientGenerator.HttpClientGenerator.BuildForUrl(settings.ServiceUrl)
+                .WithAdditionalCallsWrapper(new ExceptionHandlerCallsWrapper());
+
+            clientBuilder = builderConfigure?.Invoke(clientBuilder) ?? clientBuilder.WithoutRetries();
+
+            builder.RegisterInstance(new SyntheticFiatFeedClient(clientBuilder.Create()))
                 .As<ISyntheticFiatFeedClient>()
                 .SingleInstance();
-        }
-
-        public static void RegisterSyntheticFiatFeedClient(this ContainerBuilder builder, SyntheticFiatFeedServiceClientSettings settings)
-        {
-            builder.RegisterSyntheticFiatFeedClient(settings?.ServiceUrl);
         }
     }
 }
