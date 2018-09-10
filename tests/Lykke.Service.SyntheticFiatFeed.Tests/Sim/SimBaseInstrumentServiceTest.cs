@@ -370,30 +370,45 @@ namespace Lykke.Service.SyntheticFiatFeed.Tests.Sim
     {
         public static OrderBook AddAskLevel(this OrderBook ob, decimal price, decimal volume)
         {
-            var list = (ob.Asks as List<OrderBookItem>) ?? new List<OrderBookItem>(ob.Asks);
-            list.Add(new OrderBookItem(price, volume));
-            ob.Asks = list;
+            var askLevels = ob.AskLevels;
+
+            if (askLevels.TryGetValue(price, out var currentVolume))
+            {
+                askLevels = askLevels.SetItem(price, currentVolume + volume);
+            }
+            else
+            {
+                askLevels = askLevels.Add(price, volume);
+            }
+
+            ob.AskLevels = askLevels;
+
             return ob;
         }
 
         public static OrderBook AddBidLevel(this OrderBook ob, decimal price, decimal volume)
         {
-            var list = (ob.Bids as List<OrderBookItem>) ?? new List<OrderBookItem>(ob.Bids);
-            list.Add(new OrderBookItem(price, volume));
-            ob.Bids = list;
+            var bidLevels = ob.BidLevels;
+
+            if (bidLevels.TryGetValue(price, out var currentVolume))
+            {
+                bidLevels = bidLevels.SetItem(price, currentVolume + volume);
+            }
+            else
+            {
+                bidLevels = bidLevels.Add(price, volume);
+            }
+
+            ob.BidLevels = bidLevels;
+
             return ob;
         }
 
         public static OrderBook CreateOrderBook(string source, string assetpair)
         {
-            return new OrderBook()
-            {
-                Source = source,
-                Asset = assetpair,
-                Timestamp = DateTime.UtcNow,
-                Asks = new List<OrderBookItem>(),
-                Bids = new List<OrderBookItem>()
-            };
+            return new OrderBook(source, assetpair, DateTime.UtcNow,
+                new List<OrderBookItem>(),
+                new List<OrderBookItem>());
         }
     }
 

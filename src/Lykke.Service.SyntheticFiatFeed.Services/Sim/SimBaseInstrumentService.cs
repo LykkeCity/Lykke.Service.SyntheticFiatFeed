@@ -136,20 +136,17 @@ namespace Lykke.Service.SyntheticFiatFeed.Services.Sim
                 }
             }
 
-            var orderBook = new OrderBook()
+            var asks = new List<OrderBookItem>()
             {
-                Asset = assetPair,
-                Source = ExchangeName,
-                Timestamp = DateTime.UtcNow,
-                Asks = new List<OrderBookItem>()
-                {
-                    new OrderBookItem(ask, _setting.FakeVolume)
-                },
-                Bids = new List<OrderBookItem>()
-                {
-                    new OrderBookItem(bid, _setting.FakeVolume)
-                }
+                new OrderBookItem(ask, _setting.FakeVolume)
             };
+
+            var bids = new List<OrderBookItem>()
+            {
+                new OrderBookItem(bid, _setting.FakeVolume)
+            };
+
+            var orderBook = new OrderBook(ExchangeName, assetPair, DateTime.UtcNow, asks, bids);
 
             var tickPrice = new TickPrice()
             {
