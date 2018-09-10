@@ -23,6 +23,7 @@ SyntheticFiatFeedService:
             settings-key: SyntheticFiatFeedService-ExchangePublisherSettings-SourceName
 
     ExchangeSourceList:
+        settings-key: SyntheticFiatFeedService-ExchangeSourceList
         types:
             - JsonArray
 
