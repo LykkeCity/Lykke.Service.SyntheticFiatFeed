@@ -6,10 +6,8 @@
     <Version>1.0.0</Version>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Lykke.Common" Version="7.0.1" />
-    <PackageReference Include="Lykke.Common.ExchangeAdapter" Version="2.3.1" />
-    <PackageReference Include="Lykke.RabbitMqBroker" Version="7.1.0" />
-    <PackageReference Include="Lykke.SettingsReader" Version="2.4.0" />
+    <PackageReference Include="Lykke.RabbitMqBroker" Version="7.4.0" />
+    <PackageReference Include="Lykke.SettingsReader" Version="4.0.1" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Lykke.Service.SyntheticFiatFeed.Core\Lykke.Service.SyntheticFiatFeed.Core.csproj" />

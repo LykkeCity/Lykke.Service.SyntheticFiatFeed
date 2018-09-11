@@ -1,26 +1,21 @@
-﻿using System;
-using Common.Log;
-using JetBrains.Annotations;
-using Lykke.Common.Log;
+﻿using Lykke.HttpClientGenerator;
 
 namespace Lykke.Service.SyntheticFiatFeed.Client
 {
-    [PublicAPI]
-    public class SyntheticFiatFeedClient : ISyntheticFiatFeedClient, IDisposable
+    /// <summary>
+    /// SyntheticFiatFeed API aggregating interface.
+    /// </summary>
+    public class SyntheticFiatFeedClient : ISyntheticFiatFeedClient
     {
-        private readonly ILog _log;
+        // Note: Add similar Api properties for each new service controller
 
-        public SyntheticFiatFeedClient(string serviceUrl, ILogFactory logFactory)
-        {
-            _log = logFactory.CreateLog(this);
-        }
+        /// <summary>Inerface to SyntheticFiatFeed Api.</summary>
+        public ISyntheticFiatFeedApi Api { get; private set; }
 
-        public void Dispose()
+        /// <summary>C-tor</summary>
+        public SyntheticFiatFeedClient(IHttpClientGenerator httpClientGenerator)
         {
-            //if (_service == null)
-            //    return;
-            //_service.Dispose();
-            //_service = null;
+            Api = httpClientGenerator.Generate<ISyntheticFiatFeedApi>();
         }
     }
 }

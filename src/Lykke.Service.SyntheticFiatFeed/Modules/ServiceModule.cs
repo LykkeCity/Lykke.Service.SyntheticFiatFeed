@@ -50,7 +50,7 @@ namespace Lykke.Service.SyntheticFiatFeed.Modules
 
             builder.Register(c =>
                     new SimBaseInstrumentSettingRepository(AzureTableStorage<SimBaseInstrumentSettingEntity>.Create(
-                        _appSettings.Nested(e => e.SyntheticFiatFeedService.Db.DataConnString),
+                        _appSettings.Nested(e => e.SyntheticFiatFeedService.Db.DataConnectionString),
                         "SimSettings",
                         c.Resolve<ILogFactory>())))
                 .As<ISimBaseInstrumentSettingRepository>()
@@ -58,7 +58,7 @@ namespace Lykke.Service.SyntheticFiatFeed.Modules
 
             builder.Register(c =>
                     new ExchangeCommissionSettingRepository(AzureTableStorage<ExchangeCommissionSettingEntity>.Create(
-                        _appSettings.Nested(e => e.SyntheticFiatFeedService.Db.DataConnString),
+                        _appSettings.Nested(e => e.SyntheticFiatFeedService.Db.DataConnectionString),
                         "ExchangeCommissionSettings",
                         c.Resolve<ILogFactory>())))
                 .As<IExchangeCommissionSettingRepository>()
@@ -88,21 +88,7 @@ namespace Lykke.Service.SyntheticFiatFeed.Modules
 
             
             // Do not register entire settings in container, pass necessary settings to services which requires them
-            builder.RegisterType<SyntheticTicksPublishingService>()
-                .As<IHostedService>()
-                .WithParameter(
-                    new TypedParameter(
-                        typeof(TickPriceSettings),
-                        _appSettings.CurrentValue.SyntheticFiatFeedService.TickPrices))
-                .SingleInstance();
 
-            builder.RegisterType<OrderbookGeneratorService>()
-                .As<IHostedService>()
-                .WithParameter(
-                    new TypedParameter(
-                        typeof(OrderbooksSettings),
-                        _appSettings.CurrentValue.SyntheticFiatFeedService.OrderBooks))
-                .SingleInstance();
         }
     }
 }

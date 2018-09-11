@@ -17,36 +17,5 @@ namespace Lykke.Service.SyntheticFiatFeed.Tests
 
             Assert.IsNotEmpty(ob.Asks);
         }
-
-        [Test]
-        public void usd_orderbook()
-        {
-            var now = DateTime.UtcNow;
-            var ob = new OrderBook("bitstamp", "BTCUSD", now, new[]
-                {
-                    new OrderBookItem(6244.96M, 1.5M),
-                },
-                new[]
-                {
-                    new OrderBookItem(6239.85M, 0.8M)
-                });
-
-            var tp = new TickPrice
-            {
-                Source = "lykke",
-                Asset = "EURUSD",
-                Timestamp = now,
-                Ask = 0.9M,
-                Bid = 0.8M
-            };
-
-            var synOb = OrderbookGeneratorService.CreateSyntheticOrderBook(
-                tp,
-                ob,
-                "BTCEUR",
-                "synthetic-bitstamp-BTCUSD", 5);
-
-            Console.WriteLine(JsonConvert.SerializeObject(synOb));
-        }
     }
 }

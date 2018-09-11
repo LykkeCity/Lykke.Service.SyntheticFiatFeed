@@ -1,0 +1,42 @@
+SyntheticFiatFeedService:
+    Db:
+        DataConnectionString:
+            settings-key: SyntheticFiatFeedService-DataConnectionString
+            types:
+                - AzureTableStorage
+
+        LogsConnectionString:
+            settings-key: SyntheticFiatFeedService-LogsConnectionString
+            types:
+                - AzureTableStorage
+
+    ExchangePublisherSettings:
+        ConnectionString:
+            settings-key: SyntheticFiatFeedService-ExchangePublisherSettings-ConnectionString
+            types:
+                - RabbitMq
+        ExchangeOrderBook:
+            settings-key: SyntheticFiatFeedService-ExchangePublisherSettings-ExchangeOrderBook
+        ExchangeTickPrice:
+            settings-key: SyntheticFiatFeedService-ExchangePublisherSettings-ExchangeTickPrice
+        SourceName:
+            settings-key: SyntheticFiatFeedService-ExchangePublisherSettings-SourceName
+
+    ExchangeSourceList:
+        settings-key: SyntheticFiatFeedService-ExchangeSourceList
+        types:
+            - JsonArray
+
+SlackNotifications:
+    AzureQueue:
+        ConnectionString:
+            settings-key: SlackNotificationsConnString
+            types:
+                - AzureTableStorage
+        QueueName:
+            settings-key: SlackQueueName
+
+MonitoringServiceClient:
+    MonitoringServiceUrl:
+        settings-key: MonitoringServiceUrl
+
