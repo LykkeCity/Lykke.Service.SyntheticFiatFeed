@@ -113,13 +113,13 @@ namespace Lykke.Service.SyntheticFiatFeed.Tests.Sim
 
             Assert.AreEqual(1, ob.Asks.Count());
             Assert.AreEqual(1, ob.Bids.Count());
-            Assert.AreEqual(6070.01m, ob.Asks.First().Price);
-            Assert.AreEqual(6049.99m, ob.Bids.First().Price);
+            Assert.AreEqual(6070.00m, ob.Asks.First().Price);
+            Assert.AreEqual(6050.00m, ob.Bids.First().Price);
             Assert.AreEqual(setting.FakeVolume, ob.Asks.First().Volume);
             Assert.AreEqual(setting.FakeVolume, ob.Bids.First().Volume);
 
-            Assert.AreEqual(6070.01m, tp.Ask);
-            Assert.AreEqual(6049.99m, tp.Bid);
+            Assert.AreEqual(6070.00m, tp.Ask);
+            Assert.AreEqual(6050.00m, tp.Bid);
         }
 
         [Test]
@@ -317,8 +317,8 @@ namespace Lykke.Service.SyntheticFiatFeed.Tests.Sim
             Assert.AreEqual(1, tickPriceData.Data.Count);
 
             var tp = tickPriceData.Data.First();
-            Assert.AreEqual(6100.01m-610m, tp.Ask);
-            Assert.AreEqual(5049.99m, tp.Bid);
+            Assert.AreEqual(6100.00m-610m, tp.Ask);
+            Assert.AreEqual(5050.00m, tp.Bid);
         }
 
 
