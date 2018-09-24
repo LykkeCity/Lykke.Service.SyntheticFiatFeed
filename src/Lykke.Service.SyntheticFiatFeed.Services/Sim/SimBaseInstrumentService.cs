@@ -78,9 +78,18 @@ namespace Lykke.Service.SyntheticFiatFeed.Services.Sim
 
             if (ask <= bid)
             {
-                var mid = Math.Round((ask + bid) / 2, _setting.PriceAccuracy);
-                ask = mid + minTick;
-                bid = mid - minTick;
+                if (!_setting.UseExternalSpread)
+                {
+                    var mid = Math.Round((ask + bid) / 2, _setting.PriceAccuracy);
+                    ask = mid + minTick;
+                    bid = mid - minTick;
+                }
+                else
+                {
+                    var tmp = ask;
+                    ask = bid;
+                    bid = tmp;
+                }
             }
 
             await SendData(ask, bid, _setting.BaseAssetPair, false);

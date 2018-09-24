@@ -12,5 +12,6 @@ namespace Lykke.Service.SyntheticFiatFeed.Core.Domain
         IReadOnlyList<ILinkedInstrumentSettings> CrossInstrument { get; }
         decimal DangerChangePriceKoef { get; }
         int Order { get; }
+        bool UseExternalSpread { get; }
     }
 }

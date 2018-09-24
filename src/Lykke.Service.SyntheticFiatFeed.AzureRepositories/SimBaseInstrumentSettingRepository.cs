@@ -67,6 +67,7 @@ namespace Lykke.Service.SyntheticFiatFeed.AzureRepositories
             _crossInstrument = setting.CrossInstrument;
             DangerChangePriceKoef = setting.DangerChangePriceKoef;
             Order = setting.Order;
+            UseExternalSpread = setting.UseExternalSpread;
         }
 
         public void CopyFrom(ISimBaseInstrumentSetting setting)
@@ -78,6 +79,7 @@ namespace Lykke.Service.SyntheticFiatFeed.AzureRepositories
             _crossInstrument = setting.CrossInstrument;
             DangerChangePriceKoef = setting.DangerChangePriceKoef;
             Order = setting.Order;
+            UseExternalSpread = setting.UseExternalSpread;
         }
 
         public static string GeneratePartitionKey(string baseAssetPair)
@@ -112,6 +114,7 @@ namespace Lykke.Service.SyntheticFiatFeed.AzureRepositories
 
         public decimal DangerChangePriceKoef { get; set; }
         public int Order { get; set; }
+        public bool UseExternalSpread { get; set; }
 
         IReadOnlyList<string> ISimBaseInstrumentSetting.SourceExchange => _sourceExchange;
         IReadOnlyList<ILinkedInstrumentSettings> ISimBaseInstrumentSetting.CrossInstrument => _crossInstrument;

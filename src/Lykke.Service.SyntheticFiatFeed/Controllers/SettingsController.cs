@@ -56,6 +56,7 @@ namespace Lykke.Service.SyntheticFiatFeed.Controllers
             SourceExchange = setting.SourceExchange.ToList();
             CrossInstrument = setting.CrossInstrument.Select(e => new LinkedInstrumentSettingsDto(e)).ToList();
             Order = setting.Order;
+            UseExternalSpread = setting.UseExternalSpread;
         }
 
         public string BaseAssetPair { get; set; }
@@ -64,6 +65,7 @@ namespace Lykke.Service.SyntheticFiatFeed.Controllers
         public decimal FakeVolume { get; set; }
         public decimal DangerChangePriceKoef { get; set; }
         public int Order { get; set; }
+        public bool UseExternalSpread { get; set; }
 
         public List<string> SourceExchange { get; set; }
         public List<LinkedInstrumentSettingsDto> CrossInstrument { get; set; }
