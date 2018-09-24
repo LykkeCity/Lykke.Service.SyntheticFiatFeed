@@ -73,8 +73,8 @@ namespace Lykke.Service.SyntheticFiatFeed.Services.Sim
 
             var minTick = 1m / (decimal) Math.Pow(10, _setting.PriceAccuracy);
 
-            var ask = baseTickPrice.Select(e => GetBidWithApplyComm(_commissionSettingRepository, e)).Max() + minTick;
-            var bid = baseTickPrice.Select(e => GetAskWithApplyComm(_commissionSettingRepository, e)).Min() - minTick;
+            var ask = baseTickPrice.Select(e => GetBidWithApplyComm(_commissionSettingRepository, e)).Max();
+            var bid = baseTickPrice.Select(e => GetAskWithApplyComm(_commissionSettingRepository, e)).Min();
 
             if (ask <= bid)
             {
