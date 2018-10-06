@@ -89,6 +89,7 @@ namespace Lykke.Service.SyntheticFiatFeed.AzureRepositories
             ExchangeName = settings.ExchangeName;
             TradeCommissionPerc = settings.TradeCommissionPerc;
             WithdrawCommissionPerc = settings.WithdrawCommissionPerc;
+            ETag = "*";
         }
 
         public string ExchangeName { get; set; }
