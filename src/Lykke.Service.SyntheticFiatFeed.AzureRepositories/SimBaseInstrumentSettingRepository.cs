@@ -68,6 +68,7 @@ namespace Lykke.Service.SyntheticFiatFeed.AzureRepositories
             DangerChangePriceKoef = setting.DangerChangePriceKoef;
             Order = setting.Order;
             UseExternalSpread = setting.UseExternalSpread;
+            ETag = "*";
         }
 
         public void CopyFrom(ISimBaseInstrumentSetting setting)
@@ -80,6 +81,7 @@ namespace Lykke.Service.SyntheticFiatFeed.AzureRepositories
             DangerChangePriceKoef = setting.DangerChangePriceKoef;
             Order = setting.Order;
             UseExternalSpread = setting.UseExternalSpread;
+            ETag = "*";
         }
 
         public static string GeneratePartitionKey(string baseAssetPair)
