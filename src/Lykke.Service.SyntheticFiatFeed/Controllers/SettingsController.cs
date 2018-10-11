@@ -28,12 +28,38 @@ namespace Lykke.Service.SyntheticFiatFeed.Controllers
             return Ok(data.Select(e => new SimBaseInstrumentSettingDto(e)).ToList());
         }
 
+        [HttpGet("GetSettings/{pair}")]
+        [SwaggerOperation("GetSettings")]
+        [ProducesResponseType(typeof(SimBaseInstrumentSettingDto), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> GetSettings(string pair)
+        {
+            var data = await _instrumentSettingRepository.GetAllSettings();
+            var item = data.FirstOrDefault(e => e.BaseAssetPair == pair);
+            if (item == null)
+                return NotFound();
+            
+            return Ok(new SimBaseInstrumentSettingDto(item));
+        }
+
         [HttpPost("SetSettings")]
         [SwaggerOperation("SetSettings")]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
         public async Task<IActionResult> SetSettings([FromBody]SimBaseInstrumentSettingDto setting)
         {
             await _instrumentSettingRepository.AddOrUpdateSettings(setting);
+            return NoContent();
+        }
+
+        [HttpPost("SetMaySettings")]
+        [SwaggerOperation("SetMaySettings")]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        public async Task<IActionResult> SetMaySettings([FromBody]List<SimBaseInstrumentSettingDto> setting)
+        {
+            foreach (var item in setting)
+            {
+                await _instrumentSettingRepository.AddOrUpdateSettings(item);
+            }
             return NoContent();
         }
     }
