@@ -8,6 +8,7 @@ using Lykke.RabbitMqBroker;
 using Lykke.RabbitMqBroker.Subscriber;
 using Lykke.Service.SyntheticFiatFeed.Core.Services;
 using Lykke.Service.SyntheticFiatFeed.Settings;
+using Newtonsoft.Json;
 
 namespace Lykke.Service.SyntheticFiatFeed.RabbitMq
 {
@@ -17,7 +18,7 @@ namespace Lykke.Service.SyntheticFiatFeed.RabbitMq
         private readonly RabbitMqExchangeSource _settings;
         private readonly ILogFactory _logFactory;
         private readonly ILog _log;
-        private RabbitMqSubscriber<TickPrice> _subscriber;
+        private RabbitMqSubscriber<TickPriceExt> _subscriber;
 
         public TickPriceSubscriber(ITickPriceHandler[] tickPriceHandler, RabbitMqExchangeSource settings, ILogFactory logFactory)
         {
@@ -38,7 +39,7 @@ namespace Lykke.Service.SyntheticFiatFeed.RabbitMq
                 DeadLetterExchangeName = null
             };
 
-            _subscriber = new RabbitMqSubscriber<TickPrice>(
+            _subscriber = new RabbitMqSubscriber<TickPriceExt>(
                     _logFactory,
                     settings,
                     new ResilientErrorHandlingStrategy(
@@ -46,7 +47,7 @@ namespace Lykke.Service.SyntheticFiatFeed.RabbitMq
                         logFactory: _logFactory,
                         retryTimeout: TimeSpan.FromSeconds(10),
                         next: new DeadQueueErrorHandlingStrategy(_logFactory, settings)))
-                .SetMessageDeserializer(new JsonMessageDeserializer<TickPrice>())
+                .SetMessageDeserializer(new JsonMessageDeserializer<TickPriceExt>())
                 .Subscribe(HandleTickPrice)
                 .CreateDefaultBinding();
 
@@ -58,12 +59,15 @@ namespace Lykke.Service.SyntheticFiatFeed.RabbitMq
             _subscriber?.Stop();
         }
 
-        private async Task HandleTickPrice(TickPrice arg)
+        private async Task HandleTickPrice(TickPriceExt arg)
         {
             if (!string.IsNullOrEmpty(_settings.Name))
             {
                 arg.Source = _settings.Name;
             }
+
+            if (arg.BestAsk > 0) arg.Ask = arg.BestAsk;
+            if (arg.BestBid > 0) arg.Bid = arg.BestBid;
 
             foreach (var tickPriceHandler in _tickPriceHandler)
             {
@@ -81,6 +85,14 @@ namespace Lykke.Service.SyntheticFiatFeed.RabbitMq
                     }.ToJson());
                 }
             }
+        }
+
+        public class TickPriceExt : TickPrice
+        {
+            [JsonProperty("bestAsk")]
+            public decimal BestAsk { get; set; }
+            [JsonProperty("bestBid")]
+            public decimal BestBid { get; set; }
         }
     }
 }
