@@ -12,7 +12,7 @@ SyntheticFiatFeedService:
 
     ExchangePublisherSettings:
         ConnectionString:
-            settings-key: SyntheticFiatFeedService-ExchangePublisherSettings-ConnectionString
+            settings-key: RawPriceRabbitMq
             types:
                 - RabbitMq
         ExchangeOrderBook:
