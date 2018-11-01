@@ -83,6 +83,8 @@ namespace Lykke.Service.SyntheticFiatFeed.Controllers
             CrossInstrument = setting.CrossInstrument.Select(e => new LinkedInstrumentSettingsDto(e)).ToList();
             Order = setting.Order;
             UseExternalSpread = setting.UseExternalSpread;
+            MainSource = setting.MainSource;
+            UseMainSourceAsBase = setting.UseMainSourceAsBase;
         }
 
         public string BaseAssetPair { get; set; }
@@ -92,6 +94,9 @@ namespace Lykke.Service.SyntheticFiatFeed.Controllers
         public decimal DangerChangePriceKoef { get; set; }
         public int Order { get; set; }
         public bool UseExternalSpread { get; set; }
+
+        public string MainSource { get; set; } 
+        public bool UseMainSourceAsBase { get; set; }
 
         public List<string> SourceExchange { get; set; }
         public List<LinkedInstrumentSettingsDto> CrossInstrument { get; set; }

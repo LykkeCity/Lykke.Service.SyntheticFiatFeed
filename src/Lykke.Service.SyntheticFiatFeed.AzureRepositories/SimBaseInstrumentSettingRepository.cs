@@ -82,6 +82,8 @@ namespace Lykke.Service.SyntheticFiatFeed.AzureRepositories
             Order = setting.Order;
             UseExternalSpread = setting.UseExternalSpread;
             ETag = "*";
+            MainSource = setting.MainSource;
+            UseMainSourceAsBase = setting.UseMainSourceAsBase;
         }
 
         public static string GeneratePartitionKey(string baseAssetPair)
@@ -117,6 +119,8 @@ namespace Lykke.Service.SyntheticFiatFeed.AzureRepositories
         public decimal DangerChangePriceKoef { get; set; }
         public int Order { get; set; }
         public bool UseExternalSpread { get; set; }
+        public string MainSource { get; set; }
+        public bool UseMainSourceAsBase { get; set; }
 
         IReadOnlyList<string> ISimBaseInstrumentSetting.SourceExchange => _sourceExchange;
         IReadOnlyList<ILinkedInstrumentSettings> ISimBaseInstrumentSetting.CrossInstrument => _crossInstrument;

@@ -13,5 +13,7 @@ namespace Lykke.Service.SyntheticFiatFeed.Core.Domain
         decimal DangerChangePriceKoef { get; }
         int Order { get; }
         bool UseExternalSpread { get; }
+        string MainSource { get; }
+        bool UseMainSourceAsBase { get; }
     }
 }
