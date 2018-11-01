@@ -9,20 +9,17 @@ namespace Lykke.Service.SyntheticFiatFeed.Managers
     [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
     public class ShutdownManager : IShutdownManager
     {
-        private readonly OrderBookSubscriber[] _orderBookSubscribers;
         private readonly TickPriceSubscriber[] _tickPriceSubscribers;
         private readonly SimService _simService;
         private readonly TickPricePublisher _tickPricePublisher;
         private readonly OrderBookPublisher _orderBookPublisher;
 
         public ShutdownManager(
-            OrderBookSubscriber[] orderBookOrderBookSubscribers, 
             TickPriceSubscriber[] tickPriceSubscribers,
             SimService simService,
             TickPricePublisher tickPricePublisher,
             OrderBookPublisher orderBookPublisher)
         {
-            _orderBookSubscribers = orderBookOrderBookSubscribers;
             _tickPriceSubscribers = tickPriceSubscribers;
             _simService = simService;
             _tickPricePublisher = tickPricePublisher;
@@ -32,11 +29,6 @@ namespace Lykke.Service.SyntheticFiatFeed.Managers
         public Task StopAsync()
         {
             _simService.Stop();
-
-            foreach (var subscriber in _orderBookSubscribers)
-            {
-                subscriber.Stop();
-            }
 
             foreach (var subscriber in _tickPriceSubscribers)
             {
