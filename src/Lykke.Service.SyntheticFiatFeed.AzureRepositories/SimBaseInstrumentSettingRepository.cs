@@ -4,8 +4,8 @@ using System.Threading.Tasks;
 using AzureStorage;
 using Common;
 using Lykke.AzureStorage.Tables;
-using Lykke.Service.SyntheticFiatFeed.Core.Domain;
-using Lykke.Service.SyntheticFiatFeed.Core.Services;
+using Lykke.Service.SyntheticFiatFeed.Domain;
+using Lykke.Service.SyntheticFiatFeed.Domain.Repositories;
 
 namespace Lykke.Service.SyntheticFiatFeed.AzureRepositories
 {

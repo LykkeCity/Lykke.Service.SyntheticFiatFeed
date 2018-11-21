@@ -1,17 +1,17 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using AutoMapper;
+using Lykke.Service.SyntheticFiatFeed.Client.Models.ExchangeCommission;
+using Lykke.Service.SyntheticFiatFeed.Domain;
+using Lykke.Service.SyntheticFiatFeed.Domain.Repositories;
+using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
-using Lykke.Common.ExchangeAdapter.Contracts;
-using Lykke.Service.SyntheticFiatFeed.Core.Domain;
-using Lykke.Service.SyntheticFiatFeed.Core.Services;
-using Microsoft.AspNetCore.Mvc;
-using Swashbuckle.AspNetCore.SwaggerGen;
+using Lykke.Service.SyntheticFiatFeed.Client.Api;
 
 namespace Lykke.Service.SyntheticFiatFeed.Controllers
 {
     [Route("api/[controller]")]
-    public class ExchangeCommissionController : Controller
+    public class ExchangeCommissionController : Controller, IExchangeCommissionApi
     {
         private readonly IExchangeCommissionSettingRepository _commissionSettingRepository;
 
@@ -20,52 +20,37 @@ namespace Lykke.Service.SyntheticFiatFeed.Controllers
             _commissionSettingRepository = commissionSettingRepository;
         }
 
-        [HttpGet("GetAllSettings")]
-        [SwaggerOperation("GetAllSettings")]
-        [ProducesResponseType(typeof(List<ExchangeCommissionSettingDto>), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> GetAllSettings()
+        /// <inheritdoc/>
+        /// <response code="200">A collection of commission settings for exchanges.</response>
+        [HttpGet]
+        [ProducesResponseType(typeof(IReadOnlyCollection<ExchangeCommissionSettingModel>), (int)HttpStatusCode.OK)]
+        public async Task<IReadOnlyCollection<ExchangeCommissionSettingModel>> GetAllSettingsAsync()
         {
             var data = await _commissionSettingRepository.GetAllSettings();
 
-            return Ok(data.Select(e => new ExchangeCommissionSettingDto(e)).ToList());
+            return Mapper.Map<List<ExchangeCommissionSettingModel>>(data);
         }
 
-        [HttpGet("GetSettings/{exchange}")]
-        [SwaggerOperation("GetSettingsByExchange")]
-        [ProducesResponseType(typeof(ExchangeCommissionSettingDto), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> GetAllSettings(string exchange)
+        /// <inheritdoc/>
+        /// <response code="200">Commission settings model.</response>
+        [HttpGet("{exchange}")]
+        [ProducesResponseType(typeof(ExchangeCommissionSettingModel), (int)HttpStatusCode.OK)]
+        public async Task<ExchangeCommissionSettingModel> GetSettingsByExchangeAsync(string exchange)
         {
             var data = await _commissionSettingRepository.GetSettingsByExchange(exchange);
 
-            return Ok(new ExchangeCommissionSettingDto(data));
+            return Mapper.Map<ExchangeCommissionSettingModel>(data);
         }
 
-        [HttpPost("SetSettings")]
-        [SwaggerOperation("SetSettings")]
-        [ProducesResponseType((int)HttpStatusCode.OK)]
-        public async Task<IActionResult> SetSettings([FromBody]ExchangeCommissionSettingDto setting)
+        /// <inheritdoc/>
+        /// <response code="204">Commission settings successfully updated.</response>
+        [HttpPost]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        public async Task SetSettingsAsync([FromBody]ExchangeCommissionSettingModel model)
         {
+            var setting = Mapper.Map<ExchangeCommissionSetting>(model);
+
             await _commissionSettingRepository.SetSettings(setting);
-
-            return Ok();
         }
-    }
-
-    public class ExchangeCommissionSettingDto : IExchangeCommissionSetting
-    {
-        public ExchangeCommissionSettingDto(IExchangeCommissionSetting setting)
-        {
-            ExchangeName = setting.ExchangeName;
-            TradeCommissionPerc = setting.TradeCommissionPerc;
-            WithdrawCommissionPerc = setting.WithdrawCommissionPerc;
-        }
-
-        public ExchangeCommissionSettingDto()
-        {
-        }
-
-        public string ExchangeName { get; set; }
-        public decimal TradeCommissionPerc { get; set; }
-        public decimal WithdrawCommissionPerc { get; set; }
     }
 }

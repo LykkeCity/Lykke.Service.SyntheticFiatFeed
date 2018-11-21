@@ -4,6 +4,7 @@ using Lykke.Service.SyntheticFiatFeed.Settings;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using AutoMapper;
 
 namespace Lykke.Service.SyntheticFiatFeed
 {
@@ -21,6 +22,16 @@ namespace Lykke.Service.SyntheticFiatFeed
         {
             return services.BuildServiceProvider<AppSettings>(options =>
             {
+                options.Extend = (serviceCollection, settings) =>
+                {
+                    Mapper.Initialize(cfg =>
+                    {
+                        cfg.AddProfiles(typeof(AutoMapperProfile));
+                    });
+
+                    Mapper.AssertConfigurationIsValid();
+                };
+
                 options.SwaggerOptions = _swaggerOptions;
 
                 options.Logs = logs =>

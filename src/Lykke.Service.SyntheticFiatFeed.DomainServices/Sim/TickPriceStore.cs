@@ -2,9 +2,9 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Lykke.Common.ExchangeAdapter.Contracts;
-using Lykke.Service.SyntheticFiatFeed.Core.Services;
+using Lykke.Service.SyntheticFiatFeed.Domain.Services;
 
-namespace Lykke.Service.SyntheticFiatFeed.Services.Sim
+namespace Lykke.Service.SyntheticFiatFeed.DomainServices.Sim
 {
     public class TickPriceStore : ITickPriceStore, ITickPriceHandler
     {

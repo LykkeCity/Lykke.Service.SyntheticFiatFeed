@@ -1,6 +1,4 @@
-﻿using System;
-using Lykke.Common.ExchangeAdapter.Contracts;
-using Lykke.Service.SyntheticFiatFeed.Services;
+﻿using Lykke.Common.ExchangeAdapter.Contracts;
 using Newtonsoft.Json;
 using NUnit.Framework;
 

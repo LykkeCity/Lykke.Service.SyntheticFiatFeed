@@ -1,4 +1,4 @@
-﻿namespace Lykke.Service.SyntheticFiatFeed.Core.Domain
+﻿namespace Lykke.Service.SyntheticFiatFeed.Domain
 {
     /// <summary>
     /// Structure for discribe commission value on excange

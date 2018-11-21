@@ -22,14 +22,16 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Lykke.Sdk" Version="5.3.1" />
-    <PackageReference Include="Microsoft.AspNetCore" Version="2.1.3" />
+    <PackageReference Include="AutoMapper" Version="8.0.0" />
+    <PackageReference Include="Lykke.Sdk" Version="5.5.0" />
+    <PackageReference Include="Microsoft.AspNetCore" Version="2.1.6" />
     <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="2.1.1" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\client\Lykke.Service.SyntheticFiatFeed.Client\Lykke.Service.SyntheticFiatFeed.Client.csproj" />
     <ProjectReference Include="..\Lykke.Service.SyntheticFiatFeed.AzureRepositories\Lykke.Service.SyntheticFiatFeed.AzureRepositories.csproj" />
-    <ProjectReference Include="..\Lykke.Service.SyntheticFiatFeed.Core\Lykke.Service.SyntheticFiatFeed.Core.csproj" />
-    <ProjectReference Include="..\Lykke.Service.SyntheticFiatFeed.Services\Lykke.Service.SyntheticFiatFeed.Services.csproj" />
+    <ProjectReference Include="..\Lykke.Service.SyntheticFiatFeed.DomainServices\Lykke.Service.SyntheticFiatFeed.DomainServices.csproj" />
+    <ProjectReference Include="..\Lykke.Service.SyntheticFiatFeed.Domain\Lykke.Service.SyntheticFiatFeed.Domain.csproj" />
   </ItemGroup>
   <Target Name="PrepublishScript" BeforeTargets="PrepareForPublish">
     <ItemGroup>

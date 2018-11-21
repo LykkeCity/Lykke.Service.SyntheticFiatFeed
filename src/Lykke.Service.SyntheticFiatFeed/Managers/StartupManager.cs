@@ -1,8 +1,8 @@
 ﻿using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Lykke.Sdk;
+using Lykke.Service.SyntheticFiatFeed.DomainServices.Sim;
 using Lykke.Service.SyntheticFiatFeed.RabbitMq;
-using Lykke.Service.SyntheticFiatFeed.Services.Sim;
 
 namespace Lykke.Service.SyntheticFiatFeed.Managers
 {

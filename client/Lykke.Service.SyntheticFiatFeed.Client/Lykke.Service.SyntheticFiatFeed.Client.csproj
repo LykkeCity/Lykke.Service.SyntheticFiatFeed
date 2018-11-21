@@ -23,11 +23,8 @@
     <None Remove="Lykke.Service.SyntheticFiatFeed.Client.xml" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Lykke.HttpClientGenerator" Version="2.2.0" />
-    <PackageReference Include="Lykke.SettingsReader" Version="4.0.1" />
-    <PackageReference Include="Refit" Version="4.6.30" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Models\" />
+    <PackageReference Include="Lykke.HttpClientGenerator" Version="2.3.0" />
+    <PackageReference Include="Lykke.SettingsReader" Version="4.2.0" />
+    <PackageReference Include="Refit" Version="4.6.48" />
   </ItemGroup>
 </Project>
