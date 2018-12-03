@@ -6,7 +6,7 @@ using Lykke.Common.Log;
 using Lykke.RabbitMqBroker;
 using Lykke.RabbitMqBroker.Subscriber;
 
-namespace Lykke.Service.SyntheticFiatFeed.Services
+namespace Lykke.Service.SyntheticFiatFeed.DomainServices
 {
     public static class RmqHelper
     {

@@ -4,9 +4,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using Lykke.Common.ExchangeAdapter.Contracts;
 using Lykke.Logs;
-using Lykke.Service.SyntheticFiatFeed.Core.Domain;
-using Lykke.Service.SyntheticFiatFeed.Core.Services;
-using Lykke.Service.SyntheticFiatFeed.Services.Sim;
+using Lykke.Service.SyntheticFiatFeed.Domain;
+using Lykke.Service.SyntheticFiatFeed.Domain.Repositories;
+using Lykke.Service.SyntheticFiatFeed.Domain.Services;
+using Lykke.Service.SyntheticFiatFeed.DomainServices.Sim;
 using Moq;
 using NUnit.Framework;
 

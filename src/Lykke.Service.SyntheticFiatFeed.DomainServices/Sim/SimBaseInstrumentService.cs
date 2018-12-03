@@ -4,13 +4,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using Common;
 using Common.Log;
-using Common.PasswordTools;
 using Lykke.Common.ExchangeAdapter.Contracts;
 using Lykke.Common.Log;
-using Lykke.Service.SyntheticFiatFeed.Core.Domain;
-using Lykke.Service.SyntheticFiatFeed.Core.Services;
+using Lykke.Service.SyntheticFiatFeed.Domain;
+using Lykke.Service.SyntheticFiatFeed.Domain.Repositories;
+using Lykke.Service.SyntheticFiatFeed.Domain.Services;
 
-namespace Lykke.Service.SyntheticFiatFeed.Services.Sim
+namespace Lykke.Service.SyntheticFiatFeed.DomainServices.Sim
 {
     public class SimBaseInstrumentService
     {

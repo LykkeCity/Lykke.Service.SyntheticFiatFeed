@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace Lykke.Service.SyntheticFiatFeed.Core.Services
+namespace Lykke.Service.SyntheticFiatFeed.Domain.Services
 {
     public interface IOrderBookHandler
     {

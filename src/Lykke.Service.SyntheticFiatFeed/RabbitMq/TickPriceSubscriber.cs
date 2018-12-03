@@ -6,7 +6,7 @@ using Lykke.Common.ExchangeAdapter.Contracts;
 using Lykke.Common.Log;
 using Lykke.RabbitMqBroker;
 using Lykke.RabbitMqBroker.Subscriber;
-using Lykke.Service.SyntheticFiatFeed.Core.Services;
+using Lykke.Service.SyntheticFiatFeed.Domain.Services;
 using Lykke.Service.SyntheticFiatFeed.Settings;
 using Newtonsoft.Json;
 

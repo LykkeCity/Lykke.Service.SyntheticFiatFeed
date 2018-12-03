@@ -1,16 +1,19 @@
-﻿using System.Collections.Generic;
+﻿using AutoMapper;
+using Lykke.Common.ApiLibrary.Exceptions;
+using Lykke.Service.SyntheticFiatFeed.Client.Models.Settings;
+using Lykke.Service.SyntheticFiatFeed.Domain;
+using Lykke.Service.SyntheticFiatFeed.Domain.Repositories;
+using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using Lykke.Service.SyntheticFiatFeed.Core.Domain;
-using Lykke.Service.SyntheticFiatFeed.Core.Services;
-using Microsoft.AspNetCore.Mvc;
-using Swashbuckle.AspNetCore.SwaggerGen;
+using Lykke.Service.SyntheticFiatFeed.Client.Api;
 
 namespace Lykke.Service.SyntheticFiatFeed.Controllers
 {
     [Route("api/[controller]")]
-    public class SettingsController : Controller
+    public class SettingsController : Controller, ISettingsApi
     {
         private readonly ISimBaseInstrumentSettingRepository _instrumentSettingRepository;
 
@@ -19,108 +22,58 @@ namespace Lykke.Service.SyntheticFiatFeed.Controllers
             _instrumentSettingRepository = instrumentSettingRepository;
         }
 
-        [HttpGet("GetAllSettings")]
-        [SwaggerOperation("GetAllSettings")]
-        [ProducesResponseType(typeof(List<SimBaseInstrumentSettingDto>), (int) HttpStatusCode.OK)]
-        public async Task<IActionResult> GetAllSettings()
+        /// <inheritdoc/>
+        /// <response code="200">A collection of instrument settings.</response>
+        [HttpGet]
+        [ProducesResponseType(typeof(IReadOnlyCollection<SimBaseInstrumentSettingModel>), (int)HttpStatusCode.OK)]
+        public async Task<IReadOnlyCollection<SimBaseInstrumentSettingModel>> GetAllSettingsAsync()
         {
-            var data = await _instrumentSettingRepository.GetAllSettings();
-            return Ok(data.Select(e => new SimBaseInstrumentSettingDto(e)).ToList());
+            IReadOnlyList<ISimBaseInstrumentSetting> data = await _instrumentSettingRepository.GetAllSettings();
+
+            return Mapper.Map<List<SimBaseInstrumentSettingModel>>(data);
         }
 
-        [HttpGet("GetSettings/{pair}")]
-        [SwaggerOperation("GetSettings")]
-        [ProducesResponseType(typeof(SimBaseInstrumentSettingDto), (int)HttpStatusCode.OK)]
+        /// <inheritdoc/>
+        /// <response code="200">The instrument settings.</response>
+        /// <response code="409">Settings for asset pair do not exist.</response>
+        [HttpGet("{assetPair}")]
+        [ProducesResponseType(typeof(SimBaseInstrumentSettingModel), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<IActionResult> GetSettings(string pair)
+        public async Task<SimBaseInstrumentSettingModel> GetSettingsAsync(string assetPair)
         {
             var data = await _instrumentSettingRepository.GetAllSettings();
-            var item = data.FirstOrDefault(e => e.BaseAssetPair == pair);
+
+            var item = data.FirstOrDefault(e => e.BaseAssetPair == assetPair);
+
             if (item == null)
-                return NotFound();
-            
-            return Ok(new SimBaseInstrumentSettingDto(item));
+                throw new ValidationApiException(HttpStatusCode.NotFound, "Settings for asset pair do not exist.");
+
+            return Mapper.Map<SimBaseInstrumentSettingModel>(item);
         }
 
-        [HttpPost("SetSettings")]
-        [SwaggerOperation("SetSettings")]
+        /// <inheritdoc/>
+        /// <response code="204">Instrument settings successfully updated.</response>
+        [HttpPost]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
-        public async Task<IActionResult> SetSettings([FromBody]SimBaseInstrumentSettingDto setting)
+        public async Task SetSettingsAsync([FromBody]SimBaseInstrumentSettingModel model)
         {
+            var setting = Mapper.Map<SimBaseInstrumentSetting>(model);
+
             await _instrumentSettingRepository.AddOrUpdateSettings(setting);
-            return NoContent();
         }
 
+        /// <inheritdoc/>
+        /// <response code="204">Instrument settings successfully updated.</response>
         [HttpPost("SetMaySettings")]
-        [SwaggerOperation("SetMaySettings")]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
-        public async Task<IActionResult> SetMaySettings([FromBody]List<SimBaseInstrumentSettingDto> setting)
+        public async Task SetMaySettingsAsync([FromBody]IReadOnlyCollection<SimBaseInstrumentSettingModel> model)
         {
-            foreach (var item in setting)
+            var settings = Mapper.Map<List<SimBaseInstrumentSetting>>(model);
+
+            foreach (SimBaseInstrumentSetting item in settings)
             {
                 await _instrumentSettingRepository.AddOrUpdateSettings(item);
             }
-            return NoContent();
-        }
-    }
-
-    public class SimBaseInstrumentSettingDto : ISimBaseInstrumentSetting
-    {
-        public SimBaseInstrumentSettingDto()
-        {
-            CrossInstrument = new List<LinkedInstrumentSettingsDto>();
-            SourceExchange = new List<string>();
-        }
-
-        public SimBaseInstrumentSettingDto(ISimBaseInstrumentSetting setting)
-        {
-            BaseAssetPair = setting.BaseAssetPair;
-            CountPerSecond = setting.CountPerSecond;
-            PriceAccuracy = setting.PriceAccuracy;
-            FakeVolume = setting.FakeVolume;
-            DangerChangePriceKoef = setting.DangerChangePriceKoef;
-            SourceExchange = setting.SourceExchange.ToList();
-            CrossInstrument = setting.CrossInstrument.Select(e => new LinkedInstrumentSettingsDto(e)).ToList();
-            Order = setting.Order;
-            UseExternalSpread = setting.UseExternalSpread;
-        }
-
-        public string BaseAssetPair { get; set; }
-        public int CountPerSecond { get; set; }
-        public int PriceAccuracy { get; set; }
-        public decimal FakeVolume { get; set; }
-        public decimal DangerChangePriceKoef { get; set; }
-        public int Order { get; set; }
-        public bool UseExternalSpread { get; set; }
-
-        public List<string> SourceExchange { get; set; }
-        public List<LinkedInstrumentSettingsDto> CrossInstrument { get; set; }
-
-        IReadOnlyList<string> ISimBaseInstrumentSetting.SourceExchange => SourceExchange;
-        IReadOnlyList<ILinkedInstrumentSettings> ISimBaseInstrumentSetting.CrossInstrument => CrossInstrument;
-
-        public class LinkedInstrumentSettingsDto : ILinkedInstrumentSettings
-        {
-            public LinkedInstrumentSettingsDto()
-            {
-            }
-
-            public LinkedInstrumentSettingsDto(ILinkedInstrumentSettings settings)
-            {
-                AssetPair = settings.AssetPair;
-                CrossAssetPair = settings.CrossAssetPair;
-                SourceExchange = settings.SourceExchange;
-                IsReverse = settings.IsReverse;
-                PriceAccuracy = settings.PriceAccuracy;
-                IsInternal = settings.IsInternal;
-            }
-
-            public string AssetPair { get; set; }
-            public string CrossAssetPair { get; set; }
-            public string SourceExchange { get; set; }
-            public bool IsReverse { get; set; }
-            public int PriceAccuracy { get; set; }
-            public bool IsInternal { get; set; }
         }
     }
 }
