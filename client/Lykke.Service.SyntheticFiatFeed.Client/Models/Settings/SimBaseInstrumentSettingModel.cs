@@ -45,6 +45,16 @@ namespace Lykke.Service.SyntheticFiatFeed.Client.Models.Settings
         public bool UseExternalSpread { get; set; }
 
         /// <summary>
+        /// The Alias for send price with alternative asset pair.
+        /// </summary>
+        string Alias { get; }
+
+        /// <summary>
+        /// The coefficient for multiply (scale) price 
+        /// </summary>
+        decimal PriceCoef { get; }
+
+        /// <summary>
         /// The collection of source exchanges.
         /// </summary>
         public IReadOnlyCollection<string> SourceExchange { get; set; }
