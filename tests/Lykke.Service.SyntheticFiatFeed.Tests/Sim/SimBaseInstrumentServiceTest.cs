@@ -426,6 +426,7 @@ namespace Lykke.Service.SyntheticFiatFeed.Tests.Sim
             CrossInstrument = new List<LinkedInstrumentSettings>();
             Order = 0;
             UseExternalSpread = false;
+            PriceCoef = 1;
         }
 
         public string BaseAssetPair { get; set; }
@@ -437,6 +438,8 @@ namespace Lykke.Service.SyntheticFiatFeed.Tests.Sim
         public decimal DangerChangePriceKoef { get; set; }
         public int Order { get; set; }
         public bool UseExternalSpread { get; set; }
+        public string Alias { get; set; }
+        public decimal PriceCoef { get; set; }
 
         IReadOnlyList<string> ISimBaseInstrumentSetting.SourceExchange => SourceExchange;
         IReadOnlyList<ILinkedInstrumentSettings> ISimBaseInstrumentSetting.CrossInstrument => CrossInstrument;

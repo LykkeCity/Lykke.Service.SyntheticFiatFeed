@@ -9,6 +9,7 @@ namespace Lykke.Service.SyntheticFiatFeed.Domain
         {
             CrossInstrument = new List<LinkedInstrumentSettings>();
             SourceExchange = new List<string>();
+            PriceCoef = 1;
         }
 
         public SimBaseInstrumentSetting(ISimBaseInstrumentSetting setting)
@@ -22,6 +23,8 @@ namespace Lykke.Service.SyntheticFiatFeed.Domain
             CrossInstrument = setting.CrossInstrument.Select(e => new LinkedInstrumentSettings(e)).ToList();
             Order = setting.Order;
             UseExternalSpread = setting.UseExternalSpread;
+            Alias = setting.Alias;
+            PriceCoef = setting.PriceCoef;
         }
 
         public string BaseAssetPair { get; set; }
@@ -37,6 +40,8 @@ namespace Lykke.Service.SyntheticFiatFeed.Domain
         public int Order { get; set; }
 
         public bool UseExternalSpread { get; set; }
+        public string Alias { get; set; }
+        public decimal PriceCoef { get; set; }
 
         public IReadOnlyList<string> SourceExchange { get; set; }
 

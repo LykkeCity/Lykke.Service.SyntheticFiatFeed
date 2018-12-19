@@ -92,7 +92,18 @@ namespace Lykke.Service.SyntheticFiatFeed.DomainServices.Sim
                 }
             }
 
+            if (_setting.PriceCoef > 0)
+            {
+                ask *= _setting.PriceCoef;
+                bid *= _setting.PriceCoef;
+            }
+
             await SendData(ask, bid, _setting.BaseAssetPair, false);
+
+            if (!string.IsNullOrEmpty(_setting.Alias))
+            {
+                await SendData(ask, bid, _setting.Alias, false);
+            }
 
             foreach (var cross in _setting.CrossInstrument)
             {

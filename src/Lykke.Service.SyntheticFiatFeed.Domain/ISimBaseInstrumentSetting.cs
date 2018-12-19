@@ -18,6 +18,10 @@ namespace Lykke.Service.SyntheticFiatFeed.Domain
 
         bool UseExternalSpread { get; }
 
+        string Alias { get; }
+
+        decimal PriceCoef { get; }
+
         IReadOnlyList<string> SourceExchange { get; }
 
         IReadOnlyList<ILinkedInstrumentSettings> CrossInstrument { get; }
