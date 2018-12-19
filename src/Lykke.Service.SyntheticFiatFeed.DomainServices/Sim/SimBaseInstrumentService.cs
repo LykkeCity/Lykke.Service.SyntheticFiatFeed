@@ -63,12 +63,6 @@ namespace Lykke.Service.SyntheticFiatFeed.DomainServices.Sim
 
         public async Task CalculateMarket()
         {
-            if (_setting.BaseAssetPair == "BTCEUR")
-                Console.WriteLine(_setting.BaseAssetPair);
-
-            if (_setting.BaseAssetPair == "BTCUSD")
-                Console.WriteLine(_setting.BaseAssetPair);
-
             var baseTickPrice = _setting.SourceExchange
                 .Select(e => _tickPriceStore.GetTickPrice(e, _setting.BaseAssetPair))
                 .Where(e => e != null && e.Ask > 0 && e.Bid > 0 && e.Ask > e.Bid)
