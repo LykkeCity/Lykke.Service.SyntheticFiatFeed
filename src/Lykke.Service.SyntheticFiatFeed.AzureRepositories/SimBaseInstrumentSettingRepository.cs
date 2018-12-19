@@ -72,6 +72,7 @@ namespace Lykke.Service.SyntheticFiatFeed.AzureRepositories
             ETag = "*";
             PriceCoef = setting.PriceCoef;
             Alias = setting.Alias;
+            UseHardGlobalSpread = setting.UseHardGlobalSpread;
         }
 
         public void CopyFrom(ISimBaseInstrumentSetting setting)
@@ -87,6 +88,7 @@ namespace Lykke.Service.SyntheticFiatFeed.AzureRepositories
             ETag = "*";
             PriceCoef = setting.PriceCoef;
             Alias = setting.Alias;
+            UseHardGlobalSpread = setting.UseHardGlobalSpread;
         }
 
         public static string GeneratePartitionKey(string baseAssetPair)
@@ -122,6 +124,7 @@ namespace Lykke.Service.SyntheticFiatFeed.AzureRepositories
         public decimal DangerChangePriceKoef { get; set; }
         public int Order { get; set; }
         public bool UseExternalSpread { get; set; }
+        public bool UseHardGlobalSpread { get; set; }
         public decimal PriceCoef { get; set; }
         public string Alias { get; set; }
 

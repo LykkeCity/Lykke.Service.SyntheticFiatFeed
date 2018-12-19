@@ -427,6 +427,7 @@ namespace Lykke.Service.SyntheticFiatFeed.Tests.Sim
             Order = 0;
             UseExternalSpread = false;
             PriceCoef = 1;
+            UseHardGlobalSpread = false;
         }
 
         public string BaseAssetPair { get; set; }
@@ -438,6 +439,7 @@ namespace Lykke.Service.SyntheticFiatFeed.Tests.Sim
         public decimal DangerChangePriceKoef { get; set; }
         public int Order { get; set; }
         public bool UseExternalSpread { get; set; }
+        public bool UseHardGlobalSpread { get; }
         public string Alias { get; set; }
         public decimal PriceCoef { get; set; }
 

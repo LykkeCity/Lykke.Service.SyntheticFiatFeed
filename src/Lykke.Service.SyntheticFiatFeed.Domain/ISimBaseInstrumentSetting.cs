@@ -18,6 +18,8 @@ namespace Lykke.Service.SyntheticFiatFeed.Domain
 
         bool UseExternalSpread { get; }
 
+        bool UseHardGlobalSpread { get; }
+
         string Alias { get; }
 
         decimal PriceCoef { get; }

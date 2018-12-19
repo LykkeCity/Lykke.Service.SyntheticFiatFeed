@@ -25,6 +25,7 @@ namespace Lykke.Service.SyntheticFiatFeed.Domain
             UseExternalSpread = setting.UseExternalSpread;
             Alias = setting.Alias;
             PriceCoef = setting.PriceCoef;
+            UseHardGlobalSpread = setting.UseHardGlobalSpread;
         }
 
         public string BaseAssetPair { get; set; }
@@ -40,6 +41,8 @@ namespace Lykke.Service.SyntheticFiatFeed.Domain
         public int Order { get; set; }
 
         public bool UseExternalSpread { get; set; }
+
+        public bool UseHardGlobalSpread { get; set; }
 
         public string Alias { get; set; }
 

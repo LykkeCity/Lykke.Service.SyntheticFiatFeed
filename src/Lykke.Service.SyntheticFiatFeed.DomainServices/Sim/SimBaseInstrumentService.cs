@@ -14,7 +14,7 @@ namespace Lykke.Service.SyntheticFiatFeed.DomainServices.Sim
 {
     public class SimBaseInstrumentService
     {
-        public const string ExchangeName = "internal";
+        public const string InternalName = "internal";
         public const string LykkeExchangeName = "lykke";
 
         private readonly IOrderBookProvider _orderBookProvider;
@@ -63,6 +63,12 @@ namespace Lykke.Service.SyntheticFiatFeed.DomainServices.Sim
 
         public async Task CalculateMarket()
         {
+            if (_setting.BaseAssetPair == "BTCEUR")
+                Console.WriteLine(_setting.BaseAssetPair);
+
+            if (_setting.BaseAssetPair == "BTCUSD")
+                Console.WriteLine(_setting.BaseAssetPair);
+
             var baseTickPrice = _setting.SourceExchange
                 .Select(e => _tickPriceStore.GetTickPrice(e, _setting.BaseAssetPair))
                 .Where(e => e != null && e.Ask > 0 && e.Bid > 0 && e.Ask > e.Bid)
@@ -73,23 +79,34 @@ namespace Lykke.Service.SyntheticFiatFeed.DomainServices.Sim
 
             var minTick = 1m / (decimal) Math.Pow(10, _setting.PriceAccuracy);
 
-            var ask = baseTickPrice.Select(e => GetBidWithApplyComm(_commissionSettingRepository, e)).Max();
-            var bid = baseTickPrice.Select(e => GetAskWithApplyComm(_commissionSettingRepository, e)).Min();
+            decimal ask;
+            decimal bid;
 
-            if (ask <= bid)
+            if (!_setting.UseHardGlobalSpread)
             {
-                if (!_setting.UseExternalSpread)
+                ask = baseTickPrice.Select(e => GetBidWithApplyComm(_commissionSettingRepository, e)).Max();
+                bid = baseTickPrice.Select(e => GetAskWithApplyComm(_commissionSettingRepository, e)).Min();
+
+                if (ask <= bid)
                 {
-                    var mid = Math.Round((ask + bid) / 2, _setting.PriceAccuracy);
-                    ask = mid + minTick;
-                    bid = mid - minTick;
+                    if (!_setting.UseExternalSpread)
+                    {
+                        var mid = Math.Round((ask + bid) / 2, _setting.PriceAccuracy);
+                        ask = mid + minTick;
+                        bid = mid - minTick;
+                    }
+                    else
+                    {
+                        var tmp = ask;
+                        ask = bid;
+                        bid = tmp;
+                    }
                 }
-                else
-                {
-                    var tmp = ask;
-                    ask = bid;
-                    bid = tmp;
-                }
+            }
+            else
+            {
+                ask = baseTickPrice.Select(e => GetAskWithApplyComm(_commissionSettingRepository, e)).Max();
+                bid = baseTickPrice.Select(e => GetBidWithApplyComm(_commissionSettingRepository, e)).Min();
             }
 
             if (_setting.PriceCoef > 0)
@@ -166,11 +183,11 @@ namespace Lykke.Service.SyntheticFiatFeed.DomainServices.Sim
                 new OrderBookItem(bid, _setting.FakeVolume)
             };
 
-            var orderBook = new OrderBook(ExchangeName, assetPair, DateTime.UtcNow, asks, bids);
+            var orderBook = new OrderBook(InternalName, assetPair, DateTime.UtcNow, asks, bids);
 
             var tickPrice = new TickPrice()
             {
-                Source = ExchangeName,
+                Source = InternalName,
                 Asset = assetPair,
                 Timestamp = orderBook.Timestamp,
                 Ask = ask,

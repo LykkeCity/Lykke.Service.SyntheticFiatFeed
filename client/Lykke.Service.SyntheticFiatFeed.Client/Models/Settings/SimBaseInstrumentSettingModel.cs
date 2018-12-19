@@ -45,6 +45,11 @@ namespace Lykke.Service.SyntheticFiatFeed.Client.Models.Settings
         public bool UseExternalSpread { get; set; }
 
         /// <summary>
+        /// Use max spread between max ask and min bid.
+        /// </summary>
+        public bool UseHardGlobalSpread { get; set; }
+
+        /// <summary>
         /// The Alias for send price with alternative asset pair.
         /// </summary>
         public string Alias { get; set; }
