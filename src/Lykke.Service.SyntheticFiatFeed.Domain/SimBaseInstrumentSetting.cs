@@ -40,7 +40,9 @@ namespace Lykke.Service.SyntheticFiatFeed.Domain
         public int Order { get; set; }
 
         public bool UseExternalSpread { get; set; }
+
         public string Alias { get; set; }
+
         public decimal PriceCoef { get; set; }
 
         public IReadOnlyList<string> SourceExchange { get; set; }

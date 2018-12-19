@@ -47,12 +47,12 @@ namespace Lykke.Service.SyntheticFiatFeed.Client.Models.Settings
         /// <summary>
         /// The Alias for send price with alternative asset pair.
         /// </summary>
-        string Alias { get; }
+        public string Alias { get; set; }
 
         /// <summary>
         /// The coefficient for multiply (scale) price 
         /// </summary>
-        decimal PriceCoef { get; }
+        public decimal PriceCoef { get; set; }
 
         /// <summary>
         /// The collection of source exchanges.
