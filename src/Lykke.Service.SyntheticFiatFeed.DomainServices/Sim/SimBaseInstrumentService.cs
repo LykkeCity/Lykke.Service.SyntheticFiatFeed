@@ -103,17 +103,19 @@ namespace Lykke.Service.SyntheticFiatFeed.DomainServices.Sim
                 bid = baseTickPrice.Select(e => GetBidWithApplyComm(_commissionSettingRepository, e)).Min();
             }
 
+            var timestamp = baseTickPrice.Max(e => e.Timestamp);
+
             if (_setting.PriceCoef > 0)
             {
                 ask *= _setting.PriceCoef;
                 bid *= _setting.PriceCoef;
             }
 
-            await SendData(ask, bid, _setting.BaseAssetPair, false);
+            await SendData(ask, bid, _setting.BaseAssetPair, false, timestamp);
 
             if (!string.IsNullOrEmpty(_setting.Alias))
             {
-                await SendData(ask, bid, _setting.Alias, false);
+                await SendData(ask, bid, _setting.Alias, false, timestamp);
             }
 
             foreach (var cross in _setting.CrossInstrument)
@@ -134,12 +136,13 @@ namespace Lykke.Service.SyntheticFiatFeed.DomainServices.Sim
                     if (crossAsk == crossBid)
                         crossAsk += 1m / (decimal)Math.Pow(10, cross.PriceAccuracy);
 
-                    await SendData(crossAsk, crossBid, cross.AssetPair, cross.IsInternal);
+                    await SendData(crossAsk, crossBid, cross.AssetPair, cross.IsInternal, timestamp);
                 }
             }
         }
 
-        private async Task SendData(decimal ask, decimal bid, string assetPair, bool crossIsInternal)
+        private async Task SendData(decimal ask, decimal bid, string assetPair, bool crossIsInternal,
+            DateTime timestamp)
         {
             if (_lastPrices.TryGetValue(assetPair, out var prevTickPrice)
                 && ask == prevTickPrice.Ask
@@ -177,7 +180,7 @@ namespace Lykke.Service.SyntheticFiatFeed.DomainServices.Sim
                 new OrderBookItem(bid, _setting.FakeVolume)
             };
 
-            var orderBook = new OrderBook(InternalName, assetPair, DateTime.UtcNow, asks, bids);
+            var orderBook = new OrderBook(InternalName, assetPair, timestamp, asks, bids);
 
             var tickPrice = new TickPrice()
             {
