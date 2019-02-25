@@ -428,6 +428,8 @@ namespace Lykke.Service.SyntheticFiatFeed.Tests.Sim
             UseExternalSpread = false;
             PriceCoef = 1;
             UseHardGlobalSpread = false;
+            UseFixPrice = false;
+            FixPrice = 1;
         }
 
         public string BaseAssetPair { get; set; }
@@ -442,6 +444,8 @@ namespace Lykke.Service.SyntheticFiatFeed.Tests.Sim
         public bool UseHardGlobalSpread { get; }
         public string Alias { get; set; }
         public decimal PriceCoef { get; set; }
+        public bool UseFixPrice { get; set; }
+        public decimal FixPrice { get; set; }
 
         IReadOnlyList<string> ISimBaseInstrumentSetting.SourceExchange => SourceExchange;
         IReadOnlyList<ILinkedInstrumentSettings> ISimBaseInstrumentSetting.CrossInstrument => CrossInstrument;

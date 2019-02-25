@@ -24,6 +24,10 @@ namespace Lykke.Service.SyntheticFiatFeed.Domain
 
         decimal PriceCoef { get; }
 
+        bool UseFixPrice { get; }
+
+        decimal FixPrice { get; }
+
         IReadOnlyList<string> SourceExchange { get; }
 
         IReadOnlyList<ILinkedInstrumentSettings> CrossInstrument { get; }

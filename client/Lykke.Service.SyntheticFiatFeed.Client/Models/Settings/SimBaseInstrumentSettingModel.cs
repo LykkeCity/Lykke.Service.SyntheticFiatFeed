@@ -9,6 +9,12 @@ namespace Lykke.Service.SyntheticFiatFeed.Client.Models.Settings
     [PublicAPI]
     public class SimBaseInstrumentSettingModel
     {
+        public SimBaseInstrumentSettingModel()
+        {
+            FixPrice = 1;
+            UseFixPrice = false;
+        }
+
         /// <summary>
         /// The asset pair the settings are used for.
         /// </summary>
@@ -59,6 +65,16 @@ namespace Lykke.Service.SyntheticFiatFeed.Client.Models.Settings
         /// </summary>
         public decimal PriceCoef { get; set; }
 
+        /// <summary>
+        /// Generate ticks with fix price
+        /// </summary>
+        public bool UseFixPrice { get; set; }
+
+        /// <summary>
+        /// Fix price for pair, if activate flag - UseFixPrice
+        /// </summary>
+        public decimal FixPrice { get; set; }
+        
         /// <summary>
         /// The collection of source exchanges.
         /// </summary>

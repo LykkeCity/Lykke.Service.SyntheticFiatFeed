@@ -63,52 +63,61 @@ namespace Lykke.Service.SyntheticFiatFeed.DomainServices.Sim
 
         public async Task CalculateMarket()
         {
-            var baseTickPrice = _setting.SourceExchange
-                .Select(e => _tickPriceStore.GetTickPrice(e, _setting.BaseAssetPair))
-                .Where(e => e != null && e.Ask > 0 && e.Bid > 0 && e.Ask > e.Bid)
-                .ToList();
-
-            if (!baseTickPrice.Any())
-                return;
-
-            var minTick = 1m / (decimal) Math.Pow(10, _setting.PriceAccuracy);
-
             decimal ask;
             decimal bid;
+            DateTime timestamp;
 
-            if (!_setting.UseHardGlobalSpread)
+            if (!_setting.UseFixPrice)
             {
-                ask = baseTickPrice.Select(e => GetBidWithApplyComm(_commissionSettingRepository, e)).Max();
-                bid = baseTickPrice.Select(e => GetAskWithApplyComm(_commissionSettingRepository, e)).Min();
+                var baseTickPrice = _setting.SourceExchange
+                    .Select(e => _tickPriceStore.GetTickPrice(e, _setting.BaseAssetPair))
+                    .Where(e => e != null && e.Ask > 0 && e.Bid > 0 && e.Ask > e.Bid)
+                    .ToList();
 
-                if (ask <= bid)
+                if (!baseTickPrice.Any())
+                    return;
+
+                var minTick = 1m / (decimal) Math.Pow(10, _setting.PriceAccuracy);
+
+                if (!_setting.UseHardGlobalSpread)
                 {
-                    if (!_setting.UseExternalSpread)
+                    ask = baseTickPrice.Select(e => GetBidWithApplyComm(_commissionSettingRepository, e)).Max();
+                    bid = baseTickPrice.Select(e => GetAskWithApplyComm(_commissionSettingRepository, e)).Min();
+
+                    if (ask <= bid)
                     {
-                        var mid = Math.Round((ask + bid) / 2, _setting.PriceAccuracy);
-                        ask = mid + minTick;
-                        bid = mid - minTick;
-                    }
-                    else
-                    {
-                        var tmp = ask;
-                        ask = bid;
-                        bid = tmp;
+                        if (!_setting.UseExternalSpread)
+                        {
+                            var mid = Math.Round((ask + bid) / 2, _setting.PriceAccuracy);
+                            ask = mid + minTick;
+                            bid = mid - minTick;
+                        }
+                        else
+                        {
+                            var tmp = ask;
+                            ask = bid;
+                            bid = tmp;
+                        }
                     }
                 }
-            }
+                else
+                {
+                    ask = baseTickPrice.Select(e => GetAskWithApplyComm(_commissionSettingRepository, e)).Max();
+                    bid = baseTickPrice.Select(e => GetBidWithApplyComm(_commissionSettingRepository, e)).Min();
+                }
+
+                timestamp = baseTickPrice.Max(e => e.Timestamp);
+
+                if (_setting.PriceCoef > 0)
+                {
+                    ask *= _setting.PriceCoef;
+                    bid *= _setting.PriceCoef;
+                }
+             }
             else
             {
-                ask = baseTickPrice.Select(e => GetAskWithApplyComm(_commissionSettingRepository, e)).Max();
-                bid = baseTickPrice.Select(e => GetBidWithApplyComm(_commissionSettingRepository, e)).Min();
-            }
-
-            var timestamp = baseTickPrice.Max(e => e.Timestamp);
-
-            if (_setting.PriceCoef > 0)
-            {
-                ask *= _setting.PriceCoef;
-                bid *= _setting.PriceCoef;
+                ask = bid = _setting.FixPrice;
+                timestamp = DateTime.UtcNow;
             }
 
             await SendData(ask, bid, _setting.BaseAssetPair, false, timestamp);
